@@ -29,3 +29,18 @@ body {
 * {
   box-sizing: border-box;
 }
+
+:root {
+  --color-primary: #16A34A;
+  --color-primary-dark: #15803D;
+  --color-primary-light: #DCFCE7;
+  --color-navy: #0F172A;
+  --color-text: #1E293B;
+  --color-text-secondary: #64748B;
+  --color-bg: #F4F7F5;
+  --color-card-bg: #FFFFFF;
+  --color-input-bg: #F8FAFC;
+  --color-border: #E2E8F0;
+  --color-error: #DC2626;
+  --color-success: #16A34A;
+}
