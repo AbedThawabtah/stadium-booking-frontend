@@ -1,0 +1,260 @@
+@use '../auth-shared' as auth;
+
+.auth-page {
+  @include auth.page-shell;
+}
+
+.auth-form-panel {
+  @include auth.form-panel;
+  align-items: flex-start;
+  padding-top: 48px;
+  padding-bottom: 48px;
+
+  &__inner {
+    @include auth.form-panel-inner;
+    // Horizontal centering only — a form taller than the viewport must
+    // align near the top, not be vertically centered (and cropped).
+    margin: 0 auto;
+  }
+}
+
+.auth-brand-panel {
+  @include auth.brand-panel;
+}
+
+.brand-mark {
+  @include auth.brand-mark;
+
+  &--compact {
+    display: none;
+    margin-bottom: 24px;
+    text-decoration: none;
+    color: auth.$text;
+
+    @media (max-width: auth.$bp-split-max) {
+      display: inline-flex;
+    }
+  }
+}
+
+.auth-header {
+  margin-bottom: 20px;
+
+  h1 {
+    margin: 0 0 6px;
+    font-size: 26px;
+    font-weight: 700;
+    color: auth.$text;
+  }
+
+  p {
+    margin: 0;
+    font-size: 14px;
+    color: auth.$text-secondary;
+  }
+}
+
+.step-indicator {
+  margin-bottom: 20px;
+
+  &__label {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: auth.$green-dark;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Step 1: account type selection cards.
+// ---------------------------------------------------------------------------
+.role-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.role-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  width: 100%;
+  padding: 18px 20px;
+  text-align: right;
+  background: #fff;
+  border: 1.5px solid auth.$border;
+  border-radius: auth.$radius-md;
+  cursor: pointer;
+  font-family: auth.$font;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+
+  &:hover,
+  &--selected {
+    border-color: auth.$green;
+  }
+
+  &:hover { background: auth.$green-lighter; }
+  &--selected { background: auth.$green-light; }
+
+  &:focus-visible {
+    outline: 3px solid rgba(22, 163, 74, 0.3);
+    outline-offset: 2px;
+  }
+
+  &__icon,
+  &__check {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+  }
+
+  &__icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: auth.$green-lighter;
+    color: auth.$green-dark;
+    margin-bottom: 4px;
+
+    mat-icon { font-size: 22px; width: 22px; height: 22px; }
+  }
+
+  &--selected &__icon {
+    background: auth.$green;
+    color: #fff;
+  }
+
+  &__title {
+    font-size: 16px;
+    font-weight: 700;
+    color: auth.$text;
+  }
+
+  &__desc {
+    font-size: 13px;
+    color: auth.$text-secondary;
+    line-height: 1.6;
+  }
+
+  &__check {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: auth.$green;
+
+    mat-icon { font-size: 15px; width: 15px; height: 15px; }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Step 2: account details.
+// ---------------------------------------------------------------------------
+.step-two {
+  display: flex;
+  flex-direction: column;
+
+  &__actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 4px;
+  }
+}
+
+.full-width {
+  @include auth.field-overrides;
+}
+
+.terms-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 4px 0 18px;
+  font-size: 13px;
+  color: auth.$text-secondary;
+  line-height: 1.6;
+  cursor: pointer;
+
+  mat-checkbox {
+    margin-top: -2px;
+  }
+}
+
+.error-banner {
+  @include auth.error-banner;
+}
+
+.btn-primary {
+  @include auth.btn-primary;
+}
+
+.btn-secondary {
+  @include auth.btn-secondary;
+}
+
+.auth-switch {
+  margin: 22px 0 0;
+  text-align: center;
+  font-size: 13.5px;
+  color: auth.$text-secondary;
+
+  a {
+    color: auth.$green-dark;
+    font-weight: 700;
+    text-decoration: none;
+    margin-right: 4px;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.brand-copy {
+  margin-top: auto;
+
+  h2 {
+    margin: 0 0 12px;
+    font-size: 34px;
+    font-weight: 700;
+    line-height: 1.3;
+  }
+
+  p {
+    margin: 0 0 28px;
+    font-size: 15px;
+    line-height: 1.8;
+    color: rgba(255, 255, 255, 0.86);
+    max-width: 380px;
+  }
+}
+
+.brand-benefits {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14.5px;
+    font-weight: 600;
+  }
+
+  mat-icon {
+    flex: none;
+    color: auth.$green-light;
+  }
+}
+
+@include auth.reduced-motion-guard;

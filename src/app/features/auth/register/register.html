@@ -1,0 +1,200 @@
+<div class="auth-page">
+
+  <!-- Form panel (right side in RTL) -->
+  <div class="auth-form-panel">
+    <div class="auth-form-panel__inner">
+
+      <a class="brand-mark brand-mark--compact" routerLink="/login">
+        <span class="brand-mark__icon"><mat-icon>sports_soccer</mat-icon></span>
+        <span class="brand-mark__text">ملعبي</span>
+      </a>
+
+      <header class="auth-header">
+        <h1>إنشاء حساب جديد</h1>
+        <p>أنشئ حسابك وابدأ بحجز ملعبك</p>
+      </header>
+
+      <div class="step-indicator">
+        <span class="step-indicator__label">{{ currentStep() === 1 ? 'الخطوة 1 من 2' : 'الخطوة 2 من 2' }}</span>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+
+        <!-- Step 1: account type -->
+        @if (currentStep() === 1) {
+          <div class="role-cards">
+            <button type="button" class="role-card"
+                    [class.role-card--selected]="form.controls.role.value === 'CUSTOMER'"
+                    (click)="selectRole('CUSTOMER')">
+              @if (form.controls.role.value === 'CUSTOMER') {
+                <span class="role-card__check"><mat-icon>check</mat-icon></span>
+              }
+              <span class="role-card__icon"><mat-icon>sports_soccer</mat-icon></span>
+              <span class="role-card__title">لاعب</span>
+              <span class="role-card__desc">أبحث عن ملعب وأرغب في إجراء الحجوزات</span>
+            </button>
+
+            <button type="button" class="role-card"
+                    [class.role-card--selected]="form.controls.role.value === 'STADIUM_OWNER'"
+                    (click)="selectRole('STADIUM_OWNER')">
+              @if (form.controls.role.value === 'STADIUM_OWNER') {
+                <span class="role-card__check"><mat-icon>check</mat-icon></span>
+              }
+              <span class="role-card__icon"><mat-icon>stadium</mat-icon></span>
+              <span class="role-card__title">صاحب ملعب</span>
+              <span class="role-card__desc">أرغب في عرض ملاعبي وإدارة الحجوزات</span>
+            </button>
+          </div>
+
+          <button type="button" class="btn-primary" (click)="goToStep(2)">
+            <span>التالي</span>
+          </button>
+        }
+
+        <!-- Step 2: account details -->
+        @if (currentStep() === 2) {
+          <div class="step-two">
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>الاسم الكامل</mat-label>
+              <input matInput formControlName="fullName" autocomplete="name">
+              <mat-icon matPrefix>person_outline</mat-icon>
+              @if (form.controls.fullName.hasError('required') && form.controls.fullName.touched) {
+                <mat-error>الاسم الكامل مطلوب</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>البريد الإلكتروني</mat-label>
+              <input matInput type="email" formControlName="email" autocomplete="email">
+              <mat-icon matPrefix>mail_outline</mat-icon>
+              @if (form.controls.email.hasError('required') && form.controls.email.touched) {
+                <mat-error>البريد الإلكتروني مطلوب</mat-error>
+              }
+              @if (form.controls.email.hasError('email') && form.controls.email.touched) {
+                <mat-error>صيغة البريد الإلكتروني غير صحيحة</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>رقم الهاتف</mat-label>
+              <input matInput formControlName="phoneNumber" autocomplete="tel">
+              <mat-icon matPrefix>phone_iphone</mat-icon>
+              @if (form.controls.phoneNumber.hasError('required') && form.controls.phoneNumber.touched) {
+                <mat-error>رقم الهاتف مطلوب</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>كلمة المرور</mat-label>
+              <input matInput [type]="hidePassword() ? 'password' : 'text'" formControlName="password"
+                     autocomplete="new-password">
+              <mat-icon matPrefix>lock_outline</mat-icon>
+              <button mat-icon-button type="button" matSuffix class="field-toggle"
+                      (click)="togglePasswordVisibility()"
+                      [attr.aria-label]="hidePassword() ? 'إظهار كلمة المرور' : 'إخفاء كلمة المرور'"
+                      [attr.aria-pressed]="!hidePassword()">
+                <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+              </button>
+              @if (form.controls.password.hasError('required') && form.controls.password.touched) {
+                <mat-error>كلمة المرور مطلوبة</mat-error>
+              }
+              @if (form.controls.password.hasError('minlength') && form.controls.password.touched) {
+                <mat-error>كلمة المرور لازم تكون 8 أحرف على الأقل</mat-error>
+              }
+              @if (form.controls.password.hasError('pattern') && form.controls.password.touched) {
+                <mat-error>لازم تحتوي حرف كابيتال ورقم على الأقل</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>تأكيد كلمة المرور</mat-label>
+              <input matInput [type]="hideConfirmPassword() ? 'password' : 'text'" formControlName="confirmPassword"
+                     autocomplete="new-password">
+              <mat-icon matPrefix>lock_outline</mat-icon>
+              <button mat-icon-button type="button" matSuffix class="field-toggle"
+                      (click)="toggleConfirmPasswordVisibility()"
+                      [attr.aria-label]="hideConfirmPassword() ? 'إظهار كلمة المرور' : 'إخفاء كلمة المرور'"
+                      [attr.aria-pressed]="!hideConfirmPassword()">
+                <mat-icon>{{ hideConfirmPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+              </button>
+              @if (form.controls.confirmPassword.hasError('required') && form.controls.confirmPassword.touched) {
+                <mat-error>تأكيد كلمة المرور مطلوب</mat-error>
+              }
+              @if (form.hasError('passwordsMismatch') && form.controls.confirmPassword.touched) {
+                <mat-error>كلمتا المرور غير متطابقتين</mat-error>
+              }
+            </mat-form-field>
+
+            <label class="terms-row">
+              <mat-checkbox [checked]="termsAccepted()" (change)="termsAccepted.set($event.checked)"
+                            color="primary">
+              </mat-checkbox>
+              <span>أوافق على الشروط والأحكام وسياسة الخصوصية</span>
+            </label>
+
+            @if (errorMessage()) {
+              <div class="error-banner" role="alert">
+                <mat-icon>error_outline</mat-icon>
+                <span>{{ errorMessage() }}</span>
+              </div>
+            }
+
+            <div class="step-two__actions">
+              <button type="submit" class="btn-primary" [disabled]="loading() || !termsAccepted()">
+                @if (loading()) {
+                  <span class="btn-spinner"></span>
+                  <span>جارٍ إنشاء الحساب...</span>
+                } @else {
+                  <span>إنشاء الحساب</span>
+                }
+              </button>
+              <button type="button" class="btn-secondary" (click)="goToStep(1)" [disabled]="loading()">
+                <span>العودة</span>
+              </button>
+            </div>
+          </div>
+        }
+
+      </form>
+
+      <p class="auth-switch">
+        لديك حساب بالفعل؟
+        <a routerLink="/login">تسجيل الدخول</a>
+      </p>
+
+    </div>
+  </div>
+
+  <!-- Branding panel (left side in RTL) -->
+  <div class="auth-brand-panel">
+    <div class="pitch-overlay"></div>
+    <div class="glow glow--one"></div>
+
+    <div class="brand-mark">
+      <span class="brand-mark__icon"><mat-icon>sports_soccer</mat-icon></span>
+      <span class="brand-mark__text">ملعبي</span>
+    </div>
+
+    <div class="brand-copy">
+      <h2>ملعبك أقرب مما تتوقع</h2>
+      <p>اكتشف الملاعب القريبة، اختر الوقت المناسب، وأكمل حجزك خلال دقائق.</p>
+
+      <ul class="brand-benefits">
+        <li>
+          <mat-icon>verified</mat-icon>
+          <span>ملاعب موثوقة</span>
+        </li>
+        <li>
+          <mat-icon>bolt</mat-icon>
+          <span>مواعيد متاحة لحظيًا</span>
+        </li>
+        <li>
+          <mat-icon>check_circle</mat-icon>
+          <span>حجز سريع وسهل</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+</div>

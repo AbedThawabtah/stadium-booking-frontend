@@ -1,0 +1,406 @@
+// Shared design tokens and layout mixins for the authentication experience
+// (login + register). Consumed via `@use '../auth-shared' as auth;`.
+
+$green: #16A34A;
+$green-dark: #15803D;
+$green-light: #DCFCE7;
+$green-lighter: #F0FDF4;
+$navy: #0F172A;
+$text: #1E293B;
+$text-secondary: #64748B;
+$bg: #F4F7F5;
+$surface: #FFFFFF;
+$border: #E2E8F0;
+$error: #DC2626;
+$error-bg: #FEF2F2;
+$error-border: #FECACA;
+
+$radius-sm: 10px;
+$radius-md: 14px;
+$radius-lg: 24px;
+
+$font: 'Cairo', Roboto, sans-serif;
+
+// Below this width the branding panel is hidden and the form goes full-width.
+// Above it, the split-screen layout is used.
+$bp-split-max: 1079px;
+$bp-split-min: 1080px;
+
+// ---------------------------------------------------------------------------
+// Page layout: split-screen on desktop/large-tablet, single column below it.
+// ---------------------------------------------------------------------------
+@mixin page-shell {
+  display: flex;
+  min-width: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: $bg;
+  font-family: $font;
+  overflow-x: hidden;
+
+  @media (max-width: $bp-split-max) {
+    display: block;
+  }
+
+  // Split layout owns its own viewport-height frame so the branding panel
+  // stays fully visible while only the form side scrolls internally.
+  @media (min-width: $bp-split-min) {
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Left branding panel: stadium-inspired dark green gradient with pitch lines.
+// ---------------------------------------------------------------------------
+@mixin brand-panel {
+  position: relative;
+  flex: 1 1 460px;
+  min-width: 0;
+  max-width: 620px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  padding: 56px 48px;
+  color: #fff;
+  background:
+    radial-gradient(circle at 18% 18%, rgba(255, 255, 255, 0.08), transparent 42%),
+    radial-gradient(circle at 88% 78%, rgba(255, 255, 255, 0.06), transparent 46%),
+    linear-gradient(155deg, $navy 0%, $green-dark 55%, $green 100%);
+
+  @media (max-width: $bp-split-max) {
+    display: none;
+  }
+
+  // Fills the fixed-height page-shell frame and never scrolls — the form
+  // panel scrolls internally instead, so the branding stays fully in view.
+  @media (min-width: $bp-split-min) {
+    height: 100%;
+  }
+
+  .pitch-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.16;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 6%;
+      right: 6%;
+      height: 2px;
+      background: rgba(255, 255, 255, 0.55);
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 230px;
+      height: 230px;
+      border: 2px solid rgba(255, 255, 255, 0.55);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+    }
+  }
+
+  .glow {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+    pointer-events: none;
+
+    &--one {
+      width: 280px;
+      height: 280px;
+      top: -60px;
+      right: -60px;
+      background: rgba(255, 255, 255, 0.14);
+      animation: auth-drift 9s ease-in-out infinite alternate;
+    }
+  }
+}
+
+@keyframes auth-drift {
+  from { transform: translate(0, 0) scale(1); }
+  to { transform: translate(-14px, 14px) scale(1.06); }
+}
+
+// ---------------------------------------------------------------------------
+// Right form panel.
+// ---------------------------------------------------------------------------
+@mixin form-panel {
+  flex: 1 1 520px;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+  background: $surface;
+
+  @media (max-width: $bp-split-max) {
+    min-height: 100vh;
+    min-height: 100dvh;
+    padding: 32px 20px;
+    align-items: flex-start;
+  }
+
+  // Internal scroll region so content taller than the viewport (e.g. the
+  // registration form) never pushes the branding panel or overflows.
+  @media (min-width: $bp-split-min) {
+    height: 100%;
+    overflow-y: auto;
+  }
+}
+
+@mixin form-panel-inner {
+  width: 100%;
+  max-width: 440px;
+  min-width: 0;
+  animation: auth-fade-in 0.55s ease both;
+
+  @media (max-width: $bp-split-max) {
+    max-width: 100%;
+    padding-top: 12px;
+  }
+}
+
+@keyframes auth-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Brand mark (icon + wordmark).
+// ---------------------------------------------------------------------------
+@mixin brand-mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+
+  &__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: $green;
+    color: #fff;
+
+    mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  &__text {
+    font-size: 17px;
+    font-weight: 700;
+    color: inherit;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Angular Material form-field overrides (compact, branded, RTL-safe).
+// Uses official mat-form-field CSS custom properties; only the internal
+// text-field wrapper background needs a scoped ::ng-deep override since M3
+// exposes no public token for the outline variant's fill color.
+// ---------------------------------------------------------------------------
+@mixin field-overrides {
+  .mat-mdc-form-field {
+    display: block;
+    width: 100%;
+    margin-bottom: 2px;
+
+    --mat-form-field-container-height: 54px;
+    --mat-form-field-container-vertical-padding: 14px;
+    --mat-form-field-outlined-container-shape: #{$radius-sm};
+    --mat-form-field-outlined-outline-color: #{$border};
+    --mat-form-field-outlined-hover-outline-color: #{$text-secondary};
+    --mat-form-field-outlined-focus-outline-color: #{$green};
+    --mat-form-field-outlined-error-outline-color: #{$error};
+    --mat-form-field-outlined-label-text-color: #{$text-secondary};
+    --mat-form-field-outlined-focus-label-text-color: #{$green};
+    --mat-form-field-outlined-error-label-text-color: #{$error};
+    --mat-form-field-outlined-input-text-color: #{$text};
+    --mat-form-field-error-text-color: #{$error};
+    --mat-form-field-subscript-text-size: 12.5px;
+  }
+
+  ::ng-deep .mat-mdc-text-field-wrapper {
+    background-color: #f8fafc;
+    border-radius: #{$radius-sm};
+    transition: background-color 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  ::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-text-field-wrapper {
+    background-color: #fff;
+    box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.14);
+  }
+
+  ::ng-deep .mat-mdc-form-field.mat-form-field-invalid .mat-mdc-text-field-wrapper {
+    background-color: #fff;
+  }
+
+  mat-icon[matPrefix],
+  mat-icon[matSuffix] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: $text-secondary;
+    margin: 0 2px;
+  }
+
+  .field-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: $text-secondary;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    flex: none;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Buttons.
+// ---------------------------------------------------------------------------
+@mixin btn-primary {
+  width: 100%;
+  height: 54px;
+  border-radius: #{$radius-sm};
+  font-size: 16px;
+  font-weight: 700;
+  font-family: $font;
+  letter-spacing: 0;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: linear-gradient(135deg, $green 0%, $green-dark 100%);
+  box-shadow: 0 8px 20px rgba(21, 128, 61, 0.28);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 24px rgba(21, 128, 61, 0.34);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+    filter: brightness(0.97);
+  }
+
+  &:focus-visible {
+    outline: 3px solid rgba(22, 163, 74, 0.35);
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    color: #fff;
+    background: #94A3B8;
+    box-shadow: none;
+  }
+
+  .btn-spinner {
+    display: inline-flex;
+    width: 18px;
+    height: 18px;
+    border: 2.5px solid rgba(255, 255, 255, 0.45);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: auth-spin 0.7s linear infinite;
+  }
+}
+
+@mixin btn-secondary {
+  width: 100%;
+  height: 50px;
+  border-radius: #{$radius-sm};
+  font-size: 15px;
+  font-weight: 600;
+  font-family: $font;
+  color: $text;
+  background: #fff;
+  border: 1.5px solid $border;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+
+  &:hover {
+    background: $green-lighter;
+    border-color: $green;
+    color: $green-dark;
+  }
+
+  &:focus-visible {
+    outline: 3px solid rgba(22, 163, 74, 0.25);
+    outline-offset: 2px;
+  }
+}
+
+@keyframes auth-spin {
+  to { transform: rotate(360deg); }
+}
+
+// ---------------------------------------------------------------------------
+// Error banner.
+// ---------------------------------------------------------------------------
+@mixin error-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  border-radius: #{$radius-sm};
+  background: $error-bg;
+  border: 1px solid $error-border;
+  color: $error;
+  font-size: 13.5px;
+  line-height: 1.5;
+  animation: auth-fade-in 0.25s ease both;
+
+  mat-icon {
+    flex: none;
+    font-size: 19px;
+    width: 19px;
+    height: 19px;
+    margin-top: 1px;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Motion: honor prefers-reduced-motion globally within the auth pages.
+// ---------------------------------------------------------------------------
+@mixin reduced-motion-guard {
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+    }
+  }
+}
