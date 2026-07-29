@@ -10,4 +10,8 @@ export const routes: Routes = [
     path: 'register',
     loadComponent: () => import('./features/auth/register/register').then(m => m.RegisterComponent)
   },
+  {
+  path: 'stadiums',
+  loadComponent: () => import('./features/public/stadium-browse/stadium-browse').then(m => m.StadiumBrowseComponent)
+},
 ];

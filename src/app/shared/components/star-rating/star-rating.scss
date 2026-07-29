@@ -1,0 +1,63 @@
+:host {
+  display: inline-flex;
+}
+
+.star-rating {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.star-rating__stars {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  // التقييم بالنجوم يبقى بترتيب ثابت من اليسار لليمين بغض النظر عن اتجاه الصفحة،
+  // بنفس منطق عرض الأرقام والأسعار.
+  direction: ltr;
+}
+
+.star {
+  position: relative;
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  line-height: 0;
+}
+
+.star__bg {
+  display: block;
+  fill: none;
+  stroke: var(--color-border);
+  stroke-width: 1.5;
+}
+
+.star__fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  overflow: hidden;
+  display: block;
+
+  svg {
+    display: block;
+    fill: #F59E0B;
+  }
+}
+
+.star-rating__value {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.star-rating__count {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+
+.star-rating__empty {
+  font-size: 12.5px;
+  color: var(--color-text-secondary);
+}

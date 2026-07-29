@@ -1,0 +1,22 @@
+@if (hasReviews()) {
+  <div class="star-rating" role="img" [attr.aria-label]="ariaLabel()">
+    <span class="star-rating__stars" aria-hidden="true">
+      @for (pct of starFills(); track $index) {
+        <span class="star">
+          <svg class="star__bg" viewBox="0 0 24 24" width="15" height="15">
+            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+          </svg>
+          <span class="star__fill" [style.width.%]="pct">
+            <svg viewBox="0 0 24 24" width="15" height="15">
+              <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+            </svg>
+          </span>
+        </span>
+      }
+    </span>
+    <span class="star-rating__value">{{ clamped() | number: '1.1-1' }}</span>
+    <span class="star-rating__count">({{ reviewCount() }})</span>
+  </div>
+} @else {
+  <span class="star-rating__empty">لا توجد تقييمات بعد</span>
+}
