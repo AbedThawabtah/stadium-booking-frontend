@@ -1,0 +1,59 @@
+.admin-tabs {
+  position: relative;
+  display: flex;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--color-border);
+  overflow-x: auto;
+}
+
+.admin-tab {
+  flex: 1 1 110px;
+  text-align: center;
+  padding: 12px 14px;
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  transition: color var(--transition-base), background-color var(--transition-base);
+
+  &:hover {
+    color: var(--color-primary-dark);
+    background: var(--color-hover-tint);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: -2px;
+  }
+
+  &.active {
+    color: var(--color-primary-dark);
+  }
+}
+
+.admin-tabs__indicator {
+  position: absolute;
+  bottom: -1px;
+  inset-inline-start: 0%;
+  width: calc(100% / 5);
+  height: 2px;
+  border-radius: var(--radius-pill);
+  background: var(--gradient-primary);
+  transition: inset-inline-start var(--transition-base);
+  pointer-events: none;
+}
+
+.admin-tabs:has(.admin-tab:nth-child(1).active) .admin-tabs__indicator { inset-inline-start: 0%; }
+.admin-tabs:has(.admin-tab:nth-child(2).active) .admin-tabs__indicator { inset-inline-start: 20%; }
+.admin-tabs:has(.admin-tab:nth-child(3).active) .admin-tabs__indicator { inset-inline-start: 40%; }
+.admin-tabs:has(.admin-tab:nth-child(4).active) .admin-tabs__indicator { inset-inline-start: 60%; }
+.admin-tabs:has(.admin-tab:nth-child(5).active) .admin-tabs__indicator { inset-inline-start: 80%; }
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-tab,
+  .admin-tabs__indicator {
+    transition: none;
+  }
+}

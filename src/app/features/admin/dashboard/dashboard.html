@@ -1,0 +1,53 @@
+<div class="page-container">
+  <h1>لوحة تحكم الأدمن</h1>
+  <app-admin-nav></app-admin-nav>
+
+  @if (loading()) {
+    <div class="stats-grid" aria-hidden="true">
+      @for (i of [1,2,3,4]; track i) {
+        <div class="stat-card">
+          <div class="app-skeleton dash-skeleton__value"></div>
+          <div class="app-skeleton dash-skeleton__label"></div>
+        </div>
+      }
+    </div>
+  }
+
+  @if (!loading() && errorMessage()) {
+    <div class="app-inline-message app-inline-message--error page-alert" role="alert">{{ errorMessage() }}</div>
+  }
+
+  @if (!loading() && stats(); as s) {
+
+    <div class="section-title">المستخدمون</div>
+    <div class="stats-grid">
+      <div class="stat-card app-stagger-item"><span class="value">{{ s.totalUsers }}</span><span class="label">إجمالي المستخدمين</span></div>
+      <div class="stat-card app-stagger-item"><span class="value">{{ s.totalCustomers }}</span><span class="label">عملاء</span></div>
+      <div class="stat-card app-stagger-item"><span class="value">{{ s.totalStadiumOwners }}</span><span class="label">أصحاب ملاعب</span></div>
+    </div>
+
+    <div class="section-title">الملاعب</div>
+    <div class="stats-grid">
+      <div class="stat-card app-stagger-item"><span class="value">{{ s.totalStadiums }}</span><span class="label">إجمالي الملاعب</span></div>
+      <div class="stat-card app-stagger-item highlight-green"><span class="value">{{ s.activeStadiums }}</span><span class="label">نشطة</span></div>
+      <div class="stat-card app-stagger-item highlight-orange"><span class="value">{{ s.pendingStadiums }}</span><span class="label">بانتظار الموافقة</span></div>
+      <div class="stat-card app-stagger-item highlight-red"><span class="value">{{ s.suspendedStadiums }}</span><span class="label">موقوفة</span></div>
+    </div>
+
+    <div class="section-title">الحجوزات والإيرادات</div>
+    <div class="stats-grid">
+      <div class="stat-card app-stagger-item"><span class="value">{{ s.totalReservations }}</span><span class="label">إجمالي الحجوزات</span></div>
+      <div class="stat-card app-stagger-item highlight-green"><span class="value">{{ s.confirmedReservations }}</span><span class="label">مؤكدة</span></div>
+      <div class="stat-card app-stagger-item"><span class="value">{{ s.completedReservations }}</span><span class="label">مكتملة</span></div>
+      <div class="stat-card app-stagger-item highlight-red"><span class="value">{{ s.cancelledReservations }}</span><span class="label">ملغاة</span></div>
+      <div class="stat-card app-stagger-item wide highlight-green"><span class="value">{{ s.totalRevenue }} ₪</span><span class="label">إجمالي قيمة الحجوزات</span></div>
+    </div>
+
+    <div class="section-title">التقييمات</div>
+    <div class="stats-grid">
+      <div class="stat-card app-stagger-item"><span class="value">{{ s.totalReviews }}</span><span class="label">إجمالي التقييمات</span></div>
+      <div class="stat-card app-stagger-item highlight-orange"><span class="value">{{ s.pendingReviews }}</span><span class="label">بانتظار المراجعة</span></div>
+    </div>
+
+  }
+</div>

@@ -1,0 +1,43 @@
+@if (!hideNavbar()) {
+  <nav class="navbar">
+    <div class="navbar-container">
+
+      <a routerLink="/stadiums" class="brand" (click)="closeMobileMenu()">
+        <span class="brand-icon">⚽</span>
+        <span class="brand-name">ملعبي</span>
+      </a>
+
+      <button class="mobile-toggle" (click)="toggleMobileMenu()" [attr.aria-expanded]="mobileMenuOpen()" aria-label="فتح القائمة">
+        <span class="toggle-bar"></span>
+        <span class="toggle-bar"></span>
+        <span class="toggle-bar"></span>
+      </button>
+
+      <div class="nav-links" [class.nav-links--open]="mobileMenuOpen()">
+
+        <a routerLink="/stadiums" routerLinkActive="active" class="nav-link" (click)="closeMobileMenu()">
+          تصفح الملاعب
+        </a>
+
+        @if (isLoggedIn()) {
+          @if (dashboardLink) {
+            <a [routerLink]="dashboardLink" routerLinkActive="active" class="nav-link" (click)="closeMobileMenu()">
+              {{ dashboardLabel }}
+            </a>
+          }
+
+          <div class="user-section">
+            <span class="user-name">{{ currentUser()?.fullName }}</span>
+            <button class="logout-btn" (click)="logout()">تسجيل خروج</button>
+          </div>
+        } @else {
+          <div class="auth-links">
+            <a routerLink="/login" class="nav-link" (click)="closeMobileMenu()">تسجيل الدخول</a>
+            <a routerLink="/register" class="signup-btn" (click)="closeMobileMenu()">إنشاء حساب</a>
+          </div>
+        }
+
+      </div>
+    </div>
+  </nav>
+}

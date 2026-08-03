@@ -1,0 +1,77 @@
+<div class="page-container">
+  <h1>إدارة الملاعب</h1>
+  <app-admin-nav></app-admin-nav>
+
+  <div class="section-header">طلبات بانتظار الموافقة</div>
+
+  @if (loading()) {
+    <div class="stadiums-list" aria-hidden="true">
+      @for (i of [1,2,3]; track i) {
+        <div class="stadium-row">
+          <div class="stadium-info">
+            <div class="app-skeleton sa-skeleton__line sa-skeleton__line--title"></div>
+            <div class="app-skeleton sa-skeleton__line sa-skeleton__line--meta"></div>
+          </div>
+          <div class="app-skeleton sa-skeleton__actions"></div>
+        </div>
+      }
+    </div>
+  }
+
+  @if (!loading() && errorMessage()) {
+    <div class="app-inline-message app-inline-message--error page-alert" role="alert">{{ errorMessage() }}</div>
+  }
+
+  @if (!loading() && !errorMessage() && pendingStadiums().length === 0) {
+    <div class="app-empty-state">
+      <span class="app-empty-state__icon" aria-hidden="true">✅</span>
+      <h2>لا توجد ملاعب بانتظار الموافقة</h2>
+      <p>كل الطلبات تمت مراجعتها حاليًا</p>
+    </div>
+  }
+
+  @if (!loading() && pendingStadiums().length > 0) {
+    <div class="stadiums-list">
+      @for (stadium of pendingStadiums(); track stadium.id) {
+        <div class="stadium-row app-stagger-item">
+          <div class="stadium-info">
+            <h3>{{ stadium.name }} <span class="id-tag">#{{ stadium.id }}</span></h3>
+            <p>{{ stadium.city }} · {{ stadium.sportType }} · {{ stadium.pricePerHour }} ₪/ساعة</p>
+            <p class="owner">المالك: {{ stadium.ownerName }}</p>
+          </div>
+          <div class="stadium-actions">
+            <button
+              class="app-btn-primary"
+              [disabled]="actionInProgress() === stadium.id"
+              (click)="approve(stadium.id)">
+              موافقة
+            </button>
+            <button
+              class="app-btn-danger"
+              [disabled]="actionInProgress() === stadium.id"
+              (click)="suspend(stadium.id)">
+              رفض
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <div class="quick-action-box">
+    <div class="section-header">إجراء سريع (حسب رقم الملعب)</div>
+    <p class="quick-hint">
+      لإيقاف ملعب نشط أو إعادة تفعيل ملعب موقوف، أدخل رقم الملعب (ID) مباشرة — لا توجد حالياً قائمة شاملة لكل الملاعب بكل الحالات.
+    </p>
+    <div class="quick-form">
+      <input type="number" placeholder="رقم الملعب" [ngModel]="quickStadiumId()" (ngModelChange)="quickStadiumId.set($event)">
+      <button (click)="runQuickAction('approve')" [disabled]="quickActionLoading() || !quickStadiumId()">موافقة</button>
+      <button (click)="runQuickAction('suspend')" [disabled]="quickActionLoading() || !quickStadiumId()">إيقاف</button>
+      <button (click)="runQuickAction('reactivate')" [disabled]="quickActionLoading() || !quickStadiumId()">إعادة تفعيل</button>
+    </div>
+    @if (quickActionMessage(); as msg) {
+      <div class="app-inline-message" [class.app-inline-message--success]="msg.type === 'success'" [class.app-inline-message--error]="msg.type === 'error'" role="alert">{{ msg.text }}</div>
+    }
+  </div>
+
+</div>

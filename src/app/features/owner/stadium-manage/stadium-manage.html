@@ -1,0 +1,186 @@
+<div class="page-container">
+
+  @if (loading()) {
+    <div class="app-loading-state">
+      <span class="app-spinner" aria-hidden="true"></span>
+      <span>جارٍ التحميل...</span>
+    </div>
+  }
+
+  @if (!loading() && stadium(); as s) {
+
+    <div class="page-header">
+      <div>
+        <h1>{{ s.name }}</h1>
+        <a [routerLink]="['/owner/my-stadiums']" class="back-link">← الرجوع لملاعبي</a>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab" [class.active]="activeTab() === 'hours'" (click)="setTab('hours')">ساعات العمل</button>
+      <button class="tab" [class.active]="activeTab() === 'slots'" (click)="setTab('slots')">توليد المواعيد</button>
+      <button class="tab" [class.active]="activeTab() === 'images'" (click)="setTab('images')">الصور</button>
+      <span class="tabs__indicator" aria-hidden="true"></span>
+    </div>
+
+    <!-- ═══════════ تبويب ساعات العمل ═══════════ -->
+    @if (activeTab() === 'hours') {
+      <div class="tab-content">
+        <form [formGroup]="hoursForm" (ngSubmit)="saveWorkingHours()">
+          <div formArrayName="hours" class="hours-grid">
+            @for (day of days; track day.key; let i = $index) {
+              <div class="hour-row" [formGroupName]="i">
+                <span class="day-label">{{ day.label }}</span>
+
+                <label class="closed-toggle">
+                  <input type="checkbox" formControlName="isClosed">
+                  <span>مغلق</span>
+                </label>
+
+                @if (!hoursArray.at(i).value.isClosed) {
+                  <input type="time" formControlName="openTime" class="time-input">
+                  <span class="dash">-</span>
+                  <input type="time" formControlName="closeTime" class="time-input">
+                }
+              </div>
+            }
+          </div>
+
+          @if (hoursMessage(); as msg) {
+            <div class="app-inline-message" [class.app-inline-message--success]="msg.type === 'success'" [class.app-inline-message--error]="msg.type === 'error'" role="alert">{{ msg.text }}</div>
+          }
+
+          <button type="submit" class="app-btn-primary save-btn" [disabled]="hoursSaving()">
+            {{ hoursSaving() ? 'جارٍ الحفظ...' : 'حفظ ساعات العمل' }}
+          </button>
+        </form>
+      </div>
+    }
+
+    <!-- ═══════════ تبويب توليد المواعيد ═══════════ -->
+    @if (activeTab() === 'slots') {
+      <div class="tab-content">
+        <form [formGroup]="slotGenForm" (ngSubmit)="generateSlots()" class="slot-gen-form">
+
+          <div class="mode-toggle">
+            <label>
+              <input type="radio" formControlName="mode" value="single">
+              <span>يوم واحد</span>
+            </label>
+            <label>
+              <input type="radio" formControlName="mode" value="range">
+              <span>مدى تاريخي</span>
+            </label>
+          </div>
+
+          @if (slotGenForm.value.mode === 'single') {
+            <div class="form-field">
+              <label for="single-date">التاريخ</label>
+              <input id="single-date" type="date" formControlName="date">
+            </div>
+          } @else {
+            <div class="form-row">
+              <div class="form-field">
+                <label for="start-date">من تاريخ</label>
+                <input id="start-date" type="date" formControlName="startDate">
+              </div>
+              <div class="form-field">
+                <label for="end-date">إلى تاريخ</label>
+                <input id="end-date" type="date" formControlName="endDate">
+              </div>
+            </div>
+          }
+
+          <div class="form-field">
+            <label for="duration">مدة الموعد (بالدقائق)</label>
+            <select id="duration" formControlName="slotDurationMinutes">
+              <option [value]="30">30 دقيقة</option>
+              <option [value]="60">60 دقيقة</option>
+              <option [value]="90">90 دقيقة</option>
+              <option [value]="120">120 دقيقة</option>
+            </select>
+          </div>
+
+          @if (generateMessage(); as msg) {
+            <div class="app-inline-message" [class.app-inline-message--success]="msg.type === 'success'" [class.app-inline-message--error]="msg.type === 'error'" role="alert">{{ msg.text }}</div>
+          }
+
+          <button type="submit" class="app-btn-primary save-btn" [disabled]="generating()">
+            {{ generating() ? 'جارٍ التوليد...' : 'توليد المواعيد' }}
+          </button>
+        </form>
+
+        <div class="preview-section">
+          <h3>معاينة المواعيد المتاحة</h3>
+          <input type="date" [value]="previewDate()" (change)="onPreviewDateChange($event)" class="preview-date-input">
+
+          @if (previewLoading()) {
+            <p class="hint-text"><span class="app-spinner" aria-hidden="true"></span> جارٍ التحميل...</p>
+          }
+
+          @if (!previewLoading() && previewSlots().length === 0) {
+            <p class="hint-text">لا توجد مواعيد متاحة بهذا التاريخ</p>
+          }
+
+          @if (!previewLoading() && previewSlots().length > 0) {
+            <div class="preview-grid">
+              @for (slot of previewSlots(); track slot.id) {
+                <span class="preview-slot">{{ slot.startTime.substring(0,5) }} - {{ slot.endTime.substring(0,5) }}</span>
+              }
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- ═══════════ تبويب الصور ═══════════ -->
+    @if (activeTab() === 'images') {
+      <div class="tab-content">
+
+        <label class="upload-zone">
+          <input type="file" accept="image/jpeg,image/png,image/webp" multiple (change)="onFilesSelected($event)" hidden>
+          <span class="upload-icon">📷</span>
+          <span>{{ uploading() ? 'جارٍ الرفع...' : 'اضغط لاختيار صور (JPEG, PNG, WEBP - حتى 5MB)' }}</span>
+        </label>
+
+        @if (uploadError()) {
+          <div class="app-inline-message app-inline-message--error" role="alert">{{ uploadError() }}</div>
+        }
+
+        @if (imagesLoading()) {
+          <p class="hint-text"><span class="app-spinner" aria-hidden="true"></span> جارٍ تحميل الصور...</p>
+        }
+
+        @if (!imagesLoading() && images().length === 0) {
+          <div class="app-empty-state">
+            <span class="app-empty-state__icon" aria-hidden="true">📷</span>
+            <h2>لا توجد صور مضافة بعد</h2>
+            <p>أضف صورًا لملعبك لتظهر للاعبين عند تصفح الملاعب</p>
+          </div>
+        }
+
+        @if (!imagesLoading() && images().length > 0) {
+          <div class="images-grid">
+            @for (img of images(); track img.id; let i = $index) {
+              <div class="image-card app-stagger-item" [class.primary]="img.isPrimary">
+                <img [src]="img.imageUrl" alt="صورة الملعب">
+                @if (img.isPrimary) {
+                  <span class="primary-badge">الصورة الرئيسية</span>
+                }
+                <div class="image-actions">
+                  @if (!img.isPrimary) {
+                    <button (click)="setPrimary(img.id)" class="img-btn">تعيين كرئيسية</button>
+                  }
+                  <button (click)="deleteImage(img.id)" class="img-btn danger">حذف</button>
+                </div>
+              </div>
+            }
+          </div>
+        }
+
+      </div>
+    }
+
+  }
+
+</div>

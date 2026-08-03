@@ -1,7 +1,7 @@
 import { Component, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
@@ -32,6 +32,7 @@ export class LoginComponent {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
 
   loading = signal(false);
   errorMessage = signal<string | null>(null);
@@ -49,24 +50,25 @@ export class LoginComponent {
   }
 
   onSubmit(): void {
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
-      return;
-    }
-
-    this.loading.set(true);
-    this.errorMessage.set(null);
-
-    this.authService.login(this.form.getRawValue() as { email: string; password: string }).subscribe({
-      next: () => {
-        this.loading.set(false);
-        this.router.navigate(['/stadiums']);
-      },
-      error: (err: HttpErrorResponse) => {
-        this.loading.set(false);
-        const body = err.error as ErrorResponse;
-        this.errorMessage.set(body?.message ?? 'Login failed. Please try again.');
-      }
-    });
+  if (this.form.invalid) {
+    this.form.markAllAsTouched();
+    return;
   }
+
+  this.loading.set(true);
+  this.errorMessage.set(null);
+
+  this.authService.login(this.form.getRawValue() as { email: string; password: string }).subscribe({
+    next: () => {
+      this.loading.set(false);
+      const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || '/stadiums';
+      this.router.navigateByUrl(returnUrl);
+    },
+    error: (err: HttpErrorResponse) => {
+      this.loading.set(false);
+      const body = err.error as ErrorResponse;
+      this.errorMessage.set(body?.message ?? 'Login failed. Please try again.');
+    }
+  });
+}
 }

@@ -1,0 +1,190 @@
+.page-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 32px 24px 64px;
+  min-height: 100vh;
+  background: var(--color-bg);
+}
+
+h1 {
+  font: var(--font-page-title);
+  color: var(--color-navy);
+  margin: 0 0 20px;
+}
+
+.filters-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.search-input {
+  height: 46px;
+  padding: 0 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-input-bg);
+  font-family: inherit;
+  font-size: 14px;
+  outline: none;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background-color var(--transition-fast);
+
+  &:hover { border-color: var(--color-border-hover); }
+
+  &:focus {
+    border-color: var(--color-primary);
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.14);
+  }
+}
+
+.role-tabs {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.role-tab {
+  flex: 1 1 110px;
+  padding: 10px 16px;
+  border: none;
+  background: none;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: color var(--transition-base), background-color var(--transition-base);
+
+  &:hover { color: var(--color-primary-dark); background: var(--color-hover-tint); }
+
+  &.active { color: var(--color-primary-dark); }
+}
+
+.role-tabs__indicator {
+  position: absolute;
+  bottom: -1px;
+  inset-inline-start: 0%;
+  width: 25%;
+  height: 2px;
+  border-radius: var(--radius-pill);
+  background: var(--gradient-primary);
+  transition: inset-inline-start var(--transition-base);
+  pointer-events: none;
+}
+
+.role-tabs:has(.role-tab:nth-child(1).active) .role-tabs__indicator { inset-inline-start: 0%; }
+.role-tabs:has(.role-tab:nth-child(2).active) .role-tabs__indicator { inset-inline-start: 25%; }
+.role-tabs:has(.role-tab:nth-child(3).active) .role-tabs__indicator { inset-inline-start: 50%; }
+.role-tabs:has(.role-tab:nth-child(4).active) .role-tabs__indicator { inset-inline-start: 75%; }
+
+.page-alert {
+  margin-bottom: 20px;
+}
+
+.users-table {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.user-row {
+  background: var(--color-card-bg);
+  border-radius: var(--radius-md);
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: var(--shadow-sm);
+  flex-wrap: wrap;
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+}
+
+.user-main {
+  flex: 1;
+  min-width: 180px;
+  display: flex;
+  flex-direction: column;
+}
+
+.user-name {
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--color-navy);
+}
+
+.user-email {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+
+.status-dot {
+  font-size: 12px;
+  font-weight: 600;
+
+  &.active { color: var(--color-primary-dark); }
+  &.inactive { color: var(--color-error); }
+}
+
+.toggle-btn {
+  padding: 6px 16px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background: var(--color-input-bg);
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 12px;
+  cursor: pointer;
+  transition: border-color var(--transition-fast), color var(--transition-fast), background-color var(--transition-fast), transform var(--transition-fast);
+
+  &:hover:not(:disabled) { border-color: var(--color-primary); color: var(--color-primary-dark); }
+  &:active:not(:disabled) { transform: scale(0.96); }
+
+  &.danger {
+    color: var(--color-error);
+    border-color: var(--color-error);
+
+    &:hover:not(:disabled) { background: var(--color-error-light); }
+  }
+
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+}
+
+.self-tag {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  font-style: italic;
+}
+
+// ---------------------------------------------------------------------------
+// Loading skeleton
+// ---------------------------------------------------------------------------
+.um-skeleton {
+  &__line {
+    height: 13px;
+    border-radius: var(--radius-sm);
+    margin-bottom: 6px;
+
+    &--name { width: 120px; height: 15px; }
+    &--email { width: 160px; margin-bottom: 0; }
+  }
+
+  &__badge { width: 90px; height: 22px; border-radius: var(--radius-sm); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .role-tab,
+  .role-tabs__indicator,
+  .user-row,
+  .toggle-btn {
+    transition: none;
+  }
+}

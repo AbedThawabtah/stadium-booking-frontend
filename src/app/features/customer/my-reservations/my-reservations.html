@@ -1,0 +1,106 @@
+<div class="page-container">
+
+  <h1>حجوزاتي</h1>
+
+  <div class="tabs">
+    <button class="tab" [class.active]="activeTab() === 'ALL'" (click)="setTab('ALL')">الكل</button>
+    <button class="tab" [class.active]="activeTab() === 'CONFIRMED'" (click)="setTab('CONFIRMED')">مؤكدة</button>
+    <button class="tab" [class.active]="activeTab() === 'COMPLETED'" (click)="setTab('COMPLETED')">مكتملة</button>
+    <button class="tab" [class.active]="activeTab() === 'CANCELLED'" (click)="setTab('CANCELLED')">ملغاة</button>
+    <span class="tabs__indicator" aria-hidden="true"></span>
+  </div>
+
+  @if (loading()) {
+    <div class="reservations-list" aria-hidden="true">
+      @for (i of [1,2,3]; track i) {
+        <div class="reservation-card">
+          <div class="card-main">
+            <div class="card-info">
+              <div class="app-skeleton res-skeleton__line res-skeleton__line--title"></div>
+              <div class="app-skeleton res-skeleton__line res-skeleton__line--meta"></div>
+              <div class="app-skeleton res-skeleton__line res-skeleton__line--short"></div>
+            </div>
+            <div class="app-skeleton res-skeleton__badge"></div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  @if (!loading() && errorMessage()) {
+    <div class="app-inline-message app-inline-message--error page-alert" role="alert">{{ errorMessage() }}</div>
+  }
+
+  @if (!loading() && !errorMessage() && filteredReservations().length === 0) {
+    <div class="app-empty-state">
+      <span class="app-empty-state__icon" aria-hidden="true">📅</span>
+      <h2>لا توجد حجوزات هنا</h2>
+      <p>لم تقم بأي حجز ضمن هذا التصنيف بعد</p>
+      <a routerLink="/stadiums" class="app-btn-primary">تصفح الملاعب الآن</a>
+    </div>
+  }
+
+  @if (!loading() && filteredReservations().length > 0) {
+    <div class="reservations-list">
+      @for (reservation of filteredReservations(); track reservation.id) {
+        <div class="reservation-card app-stagger-item">
+
+          <div class="card-main">
+            <div class="card-info">
+              <h3>{{ reservation.stadiumName }}</h3>
+              <p class="date-time">
+                {{ reservation.reservationDate }} · {{ reservation.startTime.substring(0,5) }} - {{ reservation.endTime.substring(0,5) }}
+              </p>
+              <p class="price">{{ reservation.totalPrice }} ₪</p>
+            </div>
+
+            <div class="card-status">
+              <span class="app-badge"
+                    [class.app-badge--success]="reservation.status === 'CONFIRMED'"
+                    [class.app-badge--error]="reservation.status === 'CANCELLED'"
+                    [class.app-badge--info]="reservation.status === 'COMPLETED'">
+                {{ statusLabel(reservation.status) }}
+              </span>
+
+              @if (isCancellable(reservation) && cancellingId() !== reservation.id) {
+                <button class="cancel-link" (click)="openCancelForm(reservation.id)">إلغاء الحجز</button>
+              }
+            </div>
+          </div>
+
+          @if (reservation.status === 'CANCELLED' && reservation.cancellationReason) {
+            <p class="cancellation-note">سبب الإلغاء: {{ reservation.cancellationReason }}</p>
+          }
+
+          @if (cancellingId() === reservation.id) {
+            <div class="cancel-form">
+              <label for="reason-{{reservation.id}}">سبب الإلغاء (اختياري)</label>
+              <textarea
+                class="app-field"
+                id="reason-{{reservation.id}}"
+                [value]="cancelReason()"
+                (input)="cancelReason.set($any($event.target).value)"
+                rows="2"
+                placeholder="اكتب سبب الإلغاء إن أردت..."></textarea>
+
+              @if (cancelError()) {
+                <div class="app-inline-message app-inline-message--error" role="alert">{{ cancelError() }}</div>
+              }
+
+              <div class="cancel-actions">
+                <button class="app-btn-secondary" (click)="closeCancelForm()" [disabled]="cancelSubmitting()">
+                  تراجع
+                </button>
+                <button class="app-btn-danger" (click)="confirmCancel(reservation.id)" [disabled]="cancelSubmitting()">
+                  {{ cancelSubmitting() ? 'جارٍ الإلغاء...' : 'تأكيد الإلغاء' }}
+                </button>
+              </div>
+            </div>
+          }
+
+        </div>
+      }
+    </div>
+  }
+
+</div>

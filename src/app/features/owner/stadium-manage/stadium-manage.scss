@@ -1,0 +1,375 @@
+.page-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 32px 24px 64px;
+  min-height: 100vh;
+  background: var(--color-bg);
+}
+
+.page-header {
+  margin-bottom: 20px;
+
+  h1 {
+    font: var(--font-page-title);
+    color: var(--color-navy);
+    margin: 0 0 6px;
+  }
+}
+
+.back-link {
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  text-decoration: none;
+  transition: color var(--transition-fast);
+
+  &:hover { color: var(--color-primary); }
+}
+
+.tabs {
+  position: relative;
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.tab {
+  flex: 1 1 auto;
+  padding: 12px 20px;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: color var(--transition-base), background-color var(--transition-base);
+
+  &:hover { color: var(--color-primary-dark); background: var(--color-hover-tint); }
+
+  &.active {
+    color: var(--color-primary-dark);
+  }
+}
+
+.tabs__indicator {
+  position: absolute;
+  bottom: -1px;
+  inset-inline-start: 0%;
+  width: calc(100% / 3);
+  height: 2px;
+  border-radius: var(--radius-pill);
+  background: var(--gradient-primary);
+  transition: inset-inline-start var(--transition-base);
+  pointer-events: none;
+}
+
+.tabs:has(.tab:nth-child(1).active) .tabs__indicator { inset-inline-start: 0%; }
+.tabs:has(.tab:nth-child(2).active) .tabs__indicator { inset-inline-start: calc(100% / 3); }
+.tabs:has(.tab:nth-child(3).active) .tabs__indicator { inset-inline-start: calc(100% / 3 * 2); }
+
+.tab-content {
+  background: var(--color-card-bg);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+  animation: app-fade-up var(--transition-base) both;
+}
+
+// ── ساعات العمل ──
+.hours-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.hour-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  flex-wrap: wrap;
+  transition: border-color var(--transition-fast), background-color var(--transition-fast);
+
+  &:hover { border-color: var(--color-border-hover); background: var(--color-hover-tint); }
+}
+
+.day-label {
+  min-width: 70px;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--color-navy);
+}
+
+.closed-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+}
+
+.time-input {
+  height: 38px;
+  padding: 0 10px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-input-bg);
+  font-family: inherit;
+  font-size: 13px;
+  outline: none;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background-color var(--transition-fast);
+
+  &:hover { border-color: var(--color-border-hover); }
+
+  &:focus {
+    border-color: var(--color-primary);
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.14);
+  }
+}
+
+.dash {
+  color: var(--color-text-secondary);
+}
+
+// ── مشترك ──
+.form-field {
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+
+  label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: 6px;
+  }
+
+  input, select {
+    height: 46px;
+    padding: 0 14px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: var(--color-input-bg);
+    font-family: inherit;
+    font-size: 14px;
+    outline: none;
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background-color var(--transition-fast);
+
+    &:hover { border-color: var(--color-border-hover); }
+
+    &:focus {
+      border-color: var(--color-primary);
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.14);
+    }
+  }
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.inline-message,
+.app-inline-message {
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  margin-bottom: 16px;
+  text-align: center;
+  justify-content: center;
+}
+
+.save-btn {
+  width: 100%;
+  height: 48px;
+  font-size: 14px;
+}
+
+// ── توليد المواعيد ──
+.mode-toggle {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+
+  label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    cursor: pointer;
+  }
+}
+
+.preview-section {
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid var(--color-border);
+
+  h3 {
+    font: var(--font-section-title);
+    font-size: 15px;
+    color: var(--color-navy);
+    margin: 0 0 12px;
+  }
+}
+
+.preview-date-input {
+  height: 42px;
+  padding: 0 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-input-bg);
+  font-family: inherit;
+  font-size: 13px;
+  margin-bottom: 14px;
+  outline: none;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+
+  &:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.14);
+  }
+}
+
+.hint-text {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-text-secondary);
+  font-size: 13px;
+}
+
+.preview-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.preview-slot {
+  background: var(--color-primary-light);
+  color: var(--color-primary-dark);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  animation: app-pop-in var(--transition-fast) both;
+}
+
+// ── الصور ──
+.upload-zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 32px;
+  border: 2px dashed var(--color-border);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  margin-bottom: 16px;
+  transition: border-color var(--transition-base), background-color var(--transition-base);
+
+  &:hover { border-color: var(--color-primary); background: var(--color-hover-tint); }
+
+  .upload-icon { font-size: 28px; }
+}
+
+.images-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 12px;
+}
+
+.image-card {
+  position: relative;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 2px solid transparent;
+  background: var(--color-input-bg);
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+  }
+
+  &.primary { border-color: var(--color-primary); }
+
+  img {
+    width: 100%;
+    height: 110px;
+    object-fit: cover;
+    display: block;
+  }
+}
+
+.primary-badge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: var(--color-primary);
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+}
+
+.image-actions {
+  display: flex;
+  gap: 4px;
+  padding: 6px;
+}
+
+.img-btn {
+  flex: 1;
+  font-size: 10px;
+  padding: 6px 4px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background: var(--color-card-bg);
+  cursor: pointer;
+  font-family: inherit;
+  transition: border-color var(--transition-fast), color var(--transition-fast), background-color var(--transition-fast);
+
+  &:hover { border-color: var(--color-primary); color: var(--color-primary-dark); }
+
+  &.danger {
+    color: var(--color-error);
+    border-color: var(--color-error);
+
+    &:hover { background: var(--color-error-light); }
+  }
+}
+
+@media (max-width: 480px) {
+  .form-row { grid-template-columns: 1fr; }
+  .hour-row { flex-direction: column; align-items: flex-start; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tab,
+  .tabs__indicator,
+  .hour-row,
+  .time-input,
+  .upload-zone,
+  .image-card,
+  .img-btn,
+  .back-link {
+    transition: none;
+  }
+  .tab-content,
+  .preview-slot {
+    animation: none;
+  }
+}

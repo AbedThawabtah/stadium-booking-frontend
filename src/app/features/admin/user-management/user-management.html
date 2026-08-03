@@ -1,0 +1,83 @@
+<div class="page-container">
+  <h1>إدارة المستخدمين</h1>
+  <app-admin-nav></app-admin-nav>
+
+  <div class="filters-bar">
+    <input
+      type="text"
+      placeholder="ابحث بالاسم أو البريد الإلكتروني..."
+      [ngModel]="searchTerm()"
+      (ngModelChange)="searchTerm.set($event)"
+      class="search-input">
+
+    <div class="role-tabs">
+      <button class="role-tab" [class.active]="roleFilter() === 'ALL'" (click)="setRoleFilter('ALL')">الكل</button>
+      <button class="role-tab" [class.active]="roleFilter() === 'CUSTOMER'" (click)="setRoleFilter('CUSTOMER')">عملاء</button>
+      <button class="role-tab" [class.active]="roleFilter() === 'STADIUM_OWNER'" (click)="setRoleFilter('STADIUM_OWNER')">أصحاب ملاعب</button>
+      <button class="role-tab" [class.active]="roleFilter() === 'ADMIN'" (click)="setRoleFilter('ADMIN')">أدمن</button>
+      <span class="role-tabs__indicator" aria-hidden="true"></span>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="users-table" aria-hidden="true">
+      @for (i of [1,2,3,4]; track i) {
+        <div class="user-row">
+          <div class="user-main">
+            <div class="app-skeleton um-skeleton__line um-skeleton__line--name"></div>
+            <div class="app-skeleton um-skeleton__line um-skeleton__line--email"></div>
+          </div>
+          <div class="app-skeleton um-skeleton__badge"></div>
+        </div>
+      }
+    </div>
+  }
+
+  @if (!loading() && errorMessage()) {
+    <div class="app-inline-message app-inline-message--error page-alert" role="alert">{{ errorMessage() }}</div>
+  }
+
+  @if (!loading() && !errorMessage() && filteredUsers().length === 0) {
+    <div class="app-empty-state">
+      <span class="app-empty-state__icon" aria-hidden="true">👥</span>
+      <h2>لا يوجد مستخدمون مطابقون</h2>
+      <p>جرّب تغيير كلمة البحث أو التصنيف المختار</p>
+    </div>
+  }
+
+  @if (!loading() && filteredUsers().length > 0) {
+    <div class="users-table">
+      @for (user of filteredUsers(); track user.id) {
+        <div class="user-row app-stagger-item">
+          <div class="user-main">
+            <span class="user-name">{{ user.fullName }}</span>
+            <span class="user-email">{{ user.email }}</span>
+          </div>
+
+          <span class="app-badge"
+                [class.app-badge--info]="user.role === 'CUSTOMER'"
+                [class.app-badge--success]="user.role === 'STADIUM_OWNER'"
+                [class.app-badge--warning]="user.role === 'ADMIN'">
+            {{ roleLabel(user.role) }}
+          </span>
+
+          <span class="status-dot" [class.active]="user.isActive" [class.inactive]="!user.isActive">
+            {{ user.isActive ? 'نشط' : 'معطّل' }}
+          </span>
+
+          @if (user.id !== currentUserId) {
+            <button
+              class="toggle-btn"
+              [class.danger]="user.isActive"
+              [disabled]="togglingId() === user.id"
+              (click)="toggleStatus(user)">
+              {{ user.isActive ? 'تعطيل' : 'تفعيل' }}
+            </button>
+          } @else {
+            <span class="self-tag">(حسابك)</span>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>
