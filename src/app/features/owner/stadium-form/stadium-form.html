@@ -1,0 +1,101 @@
+<div class="page-container">
+
+  <h1>{{ isEditMode() ? 'تعديل بيانات الملعب' : 'إضافة ملعب جديد' }}</h1>
+
+  @if (loading()) {
+    <div class="app-loading-state">
+      <span class="app-spinner" aria-hidden="true"></span>
+      <span>جارٍ التحميل...</span>
+    </div>
+  }
+
+  @if (!loading()) {
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="stadium-form">
+
+      <div class="form-field">
+        <label for="name">اسم الملعب</label>
+        <input id="name" type="text" formControlName="name">
+        @if (form.controls.name.hasError('required') && form.controls.name.touched) {
+          <span class="field-error">اسم الملعب مطلوب</span>
+        }
+      </div>
+
+      <div class="form-field">
+        <label for="description">الوصف</label>
+        <textarea id="description" formControlName="description" rows="3"></textarea>
+      </div>
+
+      <div class="form-row">
+        <div class="form-field">
+          <label for="city">المدينة</label>
+          <input id="city" type="text" formControlName="city">
+          @if (form.controls.city.hasError('required') && form.controls.city.touched) {
+            <span class="field-error">المدينة مطلوبة</span>
+          }
+        </div>
+
+        <div class="form-field">
+          <label for="sportType">نوع الرياضة</label>
+          <input id="sportType" type="text" formControlName="sportType" placeholder="Football, Basketball...">
+          @if (form.controls.sportType.hasError('required') && form.controls.sportType.touched) {
+            <span class="field-error">نوع الرياضة مطلوب</span>
+          }
+        </div>
+      </div>
+
+      <div class="form-field">
+        <label for="location">العنوان التفصيلي</label>
+        <input id="location" type="text" formControlName="location">
+        @if (form.controls.location.hasError('required') && form.controls.location.touched) {
+          <span class="field-error">العنوان مطلوب</span>
+        }
+      </div>
+
+      <div class="form-row">
+        <div class="form-field">
+          <label for="capacity">السعة (عدد الأشخاص)</label>
+          <input id="capacity" type="number" formControlName="capacity" min="1">
+          @if (form.controls.capacity.hasError('required') && form.controls.capacity.touched) {
+            <span class="field-error">السعة مطلوبة</span>
+          }
+          @if (form.controls.capacity.hasError('min') && form.controls.capacity.touched) {
+            <span class="field-error">السعة يجب أن تكون أكبر من صفر</span>
+          }
+        </div>
+
+        <div class="form-field">
+          <label for="pricePerHour">السعر بالساعة (₪)</label>
+          <input id="pricePerHour" type="number" formControlName="pricePerHour" min="0.01" step="0.01">
+          @if (form.controls.pricePerHour.hasError('required') && form.controls.pricePerHour.touched) {
+            <span class="field-error">السعر مطلوب</span>
+          }
+          @if (form.controls.pricePerHour.hasError('min') && form.controls.pricePerHour.touched) {
+            <span class="field-error">السعر يجب أن يكون أكبر من صفر</span>
+          }
+        </div>
+      </div>
+
+      <div class="form-field">
+        <label for="contactInfo">رقم التواصل</label>
+        <input id="contactInfo" type="text" formControlName="contactInfo">
+      </div>
+
+      @if (errorMessage()) {
+        <div class="app-inline-message app-inline-message--error form-error" role="alert">{{ errorMessage() }}</div>
+      }
+
+      @if (!isEditMode()) {
+        <p class="hint-note">📌 بعد الحفظ، الملعب يكون بحالة "بانتظار الموافقة" لحد ما يراجعه الأدمن، وبنوجهك مباشرة لإضافة ساعات العمل والصور.</p>
+      }
+
+      <button type="submit" class="app-btn-primary submit-btn" [disabled]="submitting()">
+        @if (submitting()) {
+          <span class="btn-spinner"></span>
+        }
+        <span>{{ submitting() ? 'جارٍ الحفظ...' : (isEditMode() ? 'حفظ التعديلات' : 'إضافة الملعب') }}</span>
+      </button>
+
+    </form>
+  }
+
+</div>

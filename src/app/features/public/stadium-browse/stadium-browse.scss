@@ -49,9 +49,9 @@
   gap: 12px;
   background: var(--color-card-bg);
   padding: 14px;
-  border-radius: 16px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
-  transition: box-shadow 0.2s ease;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--transition-base);
 }
 
 .filter-field {
@@ -75,17 +75,20 @@
     height: 48px;
     padding: 0 14px;
     border: 1px solid var(--color-border);
-    border-radius: 12px;
+    border-radius: var(--radius-md);
     background: var(--color-input-bg);
     font-family: inherit;
     font-size: 14px;
     color: var(--color-text);
     outline: none;
-    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background-color var(--transition-fast);
+
+    &:hover { border-color: var(--color-border-hover); }
 
     &:focus,
     &:focus-visible {
       border-color: var(--color-primary);
+      background: #fff;
       box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.14);
     }
   }
@@ -158,13 +161,16 @@
   height: 48px;
   padding: 0 16px;
   border: 1px solid var(--color-border);
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   background: var(--color-input-bg);
   color: var(--color-text);
   font-family: inherit;
   font-weight: 600;
   font-size: 14px;
   cursor: pointer;
+  transition: border-color var(--transition-fast), color var(--transition-fast);
+
+  &:hover { border-color: var(--color-primary); color: var(--color-primary-dark); }
 }
 
 .filters-panel {
@@ -175,13 +181,15 @@
   height: 48px;
   padding: 0 20px;
   border: 1px solid var(--color-border);
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   background: var(--color-card-bg);
   color: var(--color-text-secondary);
   cursor: pointer;
   font-family: inherit;
   font-weight: 600;
-  transition: border-color 0.15s ease, color 0.15s ease;
+  transition: border-color var(--transition-fast), color var(--transition-fast), transform var(--transition-fast);
+
+  &:active { transform: scale(0.97); }
 
   &:hover { border-color: var(--color-primary); color: var(--color-primary); }
 
@@ -212,13 +220,14 @@
   gap: 6px;
   height: 32px;
   padding: 0 6px 0 12px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: var(--color-primary-light);
   color: var(--color-primary-dark);
   font-size: 13px;
   font-weight: 600;
   border: none;
   font-family: inherit;
+  animation: app-pop-in var(--transition-base) both;
 
   &__remove {
     display: flex;
@@ -251,27 +260,22 @@
   position: relative;
   overflow: hidden;
   background: var(--color-border);
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
 
   &::after {
     content: '';
     position: absolute;
     inset: 0;
     background: linear-gradient(90deg, transparent, var(--color-input-bg), transparent);
-    animation: shimmer 1.5s ease-in-out infinite;
+    animation: app-shimmer 1.5s ease-in-out infinite;
   }
-}
-
-@keyframes shimmer {
-  from { transform: translateX(-100%); }
-  to { transform: translateX(100%); }
 }
 
 .skeleton-card {
   background: var(--color-card-bg);
-  border-radius: 16px;
+  border-radius: var(--radius-lg);
   overflow: hidden;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-sm);
 
   &__body { padding: 16px; }
 
@@ -298,12 +302,13 @@
   align-items: center;
   gap: 12px;
   padding: 16px 18px;
-  border-radius: 14px;
+  border-radius: var(--radius-lg);
   margin-bottom: 20px;
+  animation: app-slide-fade var(--transition-base) both;
 
   &--error {
-    background: #FEF2F2;
-    border: 1px solid #FECACA;
+    background: var(--color-error-light);
+    border: 1px solid var(--color-error-border);
     color: var(--color-error);
   }
 
@@ -314,13 +319,14 @@
     height: 36px;
     padding: 0 16px;
     border: 1px solid currentColor;
-    border-radius: 10px;
+    border-radius: var(--radius-sm);
     background: transparent;
     color: inherit;
     font-family: inherit;
     font-weight: 600;
     font-size: 13px;
     cursor: pointer;
+    transition: background-color var(--transition-fast);
 
     &:hover { background: rgba(220, 38, 38, 0.08); }
   }
@@ -332,6 +338,7 @@
   align-items: center;
   text-align: center;
   padding: 56px 16px;
+  animation: app-fade-up var(--transition-slow) both;
 
   &__illustration { margin-bottom: 8px; }
   &__frame { stroke: var(--color-border); }
@@ -389,15 +396,15 @@
 
 .stadium-card {
   background: var(--color-card-bg);
-  border-radius: 16px;
+  border-radius: var(--radius-lg);
   overflow: hidden;
   cursor: pointer;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
 
   &:hover {
     transform: translateY(-4px);
-    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.09);
+    box-shadow: var(--shadow-lg);
 
     .card-image-placeholder__icon { transform: scale(1.08); }
   }
@@ -497,22 +504,23 @@
   color: white;
   border: none;
   padding: 9px 14px;
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   font-family: inherit;
   font-weight: 700;
   font-size: 13px;
   cursor: pointer;
-  transition: background-color 0.15s ease;
+  transition: background-color var(--transition-fast), transform var(--transition-fast);
 
   &:hover { background: var(--color-primary-dark); }
   &:hover .book-btn__arrow { transform: translateX(-3px); }
+  &:active { transform: scale(0.97); }
 
   &:focus-visible {
     outline: 2px solid var(--color-primary-dark);
     outline-offset: 2px;
   }
 
-  &__arrow { transition: transform 0.15s ease; }
+  &__arrow { transition: transform var(--transition-fast); }
 }
 
 // ---------------------------------------------------------------------------
@@ -533,14 +541,14 @@
   min-width: 42px;
   padding: 0 14px;
   border: 1px solid var(--color-border);
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   background: var(--color-card-bg);
   font-family: inherit;
   font-weight: 600;
   font-size: 14px;
   cursor: pointer;
   color: var(--color-text);
-  transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+  transition: border-color var(--transition-fast), background-color var(--transition-fast), color var(--transition-fast);
 
   &:disabled { opacity: 0.4; cursor: not-allowed; }
 
@@ -597,7 +605,7 @@
     overflow: hidden;
     max-height: 0;
     opacity: 0;
-    transition: max-height 0.25s ease, opacity 0.2s ease;
+    transition: max-height var(--transition-base), opacity var(--transition-base);
 
     &--open {
       max-height: 600px;
@@ -626,5 +634,10 @@
   .card-image-placeholder__icon,
   .filters-panel {
     transition: none;
+  }
+  .stadium-card.app-stagger-item,
+  .alert,
+  .chip {
+    animation: none;
   }
 }

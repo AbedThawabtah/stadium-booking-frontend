@@ -1,0 +1,62 @@
+<div class="page-container">
+  <h1>مراجعة التقييمات</h1>
+  <app-admin-nav></app-admin-nav>
+
+  @if (loading()) {
+    <div class="reviews-list" aria-hidden="true">
+      @for (i of [1,2,3]; track i) {
+        <div class="review-card">
+          <div class="app-skeleton rm-skeleton__line rm-skeleton__line--title"></div>
+          <div class="app-skeleton rm-skeleton__line rm-skeleton__line--body"></div>
+          <div class="app-skeleton rm-skeleton__line rm-skeleton__line--body"></div>
+          <div class="app-skeleton rm-skeleton__actions"></div>
+        </div>
+      }
+    </div>
+  }
+
+  @if (!loading() && errorMessage()) {
+    <div class="app-inline-message app-inline-message--error page-alert" role="alert">{{ errorMessage() }}</div>
+  }
+
+  @if (!loading() && !errorMessage() && pendingReviews().length === 0) {
+    <div class="app-empty-state">
+      <span class="app-empty-state__icon" aria-hidden="true">⭐</span>
+      <h2>لا توجد تقييمات بانتظار المراجعة</h2>
+      <p>كل التقييمات تمت مراجعتها حاليًا</p>
+    </div>
+  }
+
+  @if (!loading() && pendingReviews().length > 0) {
+    <div class="reviews-list">
+      @for (review of pendingReviews(); track review.id) {
+        <div class="review-card app-stagger-item">
+          <div class="review-header">
+            <div>
+              <span class="stadium-name">{{ review.stadiumName }}</span>
+              <span class="customer-name">بواسطة {{ review.customerName }}</span>
+            </div>
+            <span class="stars">{{ '★'.repeat(review.rating) }}{{ '☆'.repeat(5 - review.rating) }}</span>
+          </div>
+
+          <p class="comment">{{ review.comment }}</p>
+
+          <div class="review-actions">
+            <button
+              class="app-btn-primary"
+              [disabled]="actionInProgress() === review.id"
+              (click)="approve(review.id)">
+              موافقة
+            </button>
+            <button
+              class="app-btn-danger"
+              [disabled]="actionInProgress() === review.id"
+              (click)="reject(review.id)">
+              رفض
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

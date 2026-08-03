@@ -156,7 +156,7 @@
 
     <div class="stadium-grid">
       @for (stadium of stadiums(); track stadium.id) {
-        <div class="stadium-card" tabindex="0" role="button"
+        <div class="stadium-card app-stagger-item" tabindex="0" role="button"
              [attr.aria-label]="'عرض تفاصيل ' + stadium.name"
              (click)="viewStadium(stadium.id)"
              (keydown.enter)="viewStadium(stadium.id)">

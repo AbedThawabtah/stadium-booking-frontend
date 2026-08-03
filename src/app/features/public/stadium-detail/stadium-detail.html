@@ -1,0 +1,217 @@
+<div class="page-container">
+
+  @if (loading()) {
+    <div class="detail-grid" aria-hidden="true">
+      <div class="main-column">
+        <div class="app-skeleton detail-skeleton__gallery"></div>
+        <div class="info-card">
+          <div class="app-skeleton detail-skeleton__line detail-skeleton__line--title"></div>
+          <div class="app-skeleton detail-skeleton__line detail-skeleton__line--meta"></div>
+          <div class="app-skeleton detail-skeleton__line"></div>
+          <div class="app-skeleton detail-skeleton__line detail-skeleton__line--short"></div>
+        </div>
+      </div>
+      <div class="booking-column">
+        <div class="booking-card">
+          <div class="app-skeleton detail-skeleton__line detail-skeleton__line--title"></div>
+          <div class="app-skeleton detail-skeleton__field"></div>
+          <div class="app-skeleton detail-skeleton__block"></div>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (!loading() && notFound()) {
+    <div class="app-empty-state">
+      <span class="app-empty-state__icon" aria-hidden="true">⚽</span>
+      <h2>الملعب غير موجود</h2>
+      <p>قد يكون الملعب غير متاح حالياً أو تم حذفه</p>
+    </div>
+  }
+
+  @if (!loading() && !notFound() && stadium(); as s) {
+
+    <div class="detail-grid">
+
+      <!-- عمود المحتوى الرئيسي -->
+      <div class="main-column">
+
+        <!-- معرض الصور -->
+        <div class="gallery">
+          @if (images().length > 0) {
+            <div class="gallery-main">
+              <img [src]="primaryImage()?.imageUrl" [alt]="s.name">
+            </div>
+            @if (images().length > 1) {
+              <div class="gallery-thumbs">
+                @for (img of images(); track img.id; let i = $index) {
+                  <button
+                    class="thumb"
+                    [class.active]="i === activeImageIndex()"
+                    (click)="selectImage(i)">
+                    <img [src]="img.imageUrl" [alt]="s.name">
+                  </button>
+                }
+              </div>
+            }
+          } @else {
+            <div class="gallery-placeholder">
+              <span>⚽</span>
+            </div>
+          }
+        </div>
+
+        <!-- معلومات الملعب -->
+        <div class="info-card">
+          <div class="info-header">
+            <h1>{{ s.name }}</h1>
+            <span class="app-badge app-badge--success">{{ s.sportType }}</span>
+          </div>
+
+          <p class="location">📍 {{ s.city }} · {{ s.location }}</p>
+
+          @if (s.averageRating) {
+            <div class="rating-row">
+              <span class="stars">★★★★★</span>
+              <span>{{ averageRatingRounded() }} ({{ s.totalReviews }} تقييم)</span>
+            </div>
+          }
+
+          <p class="description">{{ s.description }}</p>
+
+          <div class="meta-grid">
+            <div class="meta-item">
+              <span class="meta-label">السعة</span>
+              <span class="meta-value">{{ s.capacity }} شخص</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">السعر</span>
+              <span class="meta-value">{{ s.pricePerHour }} ₪ / ساعة</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">التواصل</span>
+              <span class="meta-value">{{ s.contactInfo }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ساعات العمل -->
+        <div class="info-card">
+          <h2>ساعات العمل</h2>
+          <div class="hours-list">
+            @for (wh of workingHours(); track wh.id) {
+              <div class="hours-row">
+                <span>{{ dayLabels[wh.dayOfWeek] }}</span>
+                @if (wh.isClosed) {
+                  <span class="closed">مغلق</span>
+                } @else {
+                  <span>{{ wh.openTime.substring(0,5) }} - {{ wh.closeTime.substring(0,5) }}</span>
+                }
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- التقييمات -->
+        <div class="info-card">
+          <h2>التقييمات ({{ reviews().length }})</h2>
+          @if (reviews().length === 0) {
+            <p class="no-reviews">لا توجد تقييمات بعد</p>
+          } @else {
+            <div class="reviews-list">
+              @for (review of reviews(); track review.id) {
+                <div class="review-item">
+                  <div class="review-header">
+                    <span class="review-author">{{ review.customerName }}</span>
+                    <span class="review-stars">{{ '★'.repeat(review.rating) }}{{ '☆'.repeat(5 - review.rating) }}</span>
+                  </div>
+                  <p class="review-comment">{{ review.comment }}</p>
+                </div>
+              }
+            </div>
+          }
+        </div>
+
+      </div>
+
+      <!-- عمود الحجز -->
+      <div class="booking-column">
+        <div class="booking-card">
+          <h2>احجز موعدك</h2>
+
+          <label class="date-label" for="booking-date">اختر التاريخ</label>
+          <input
+            id="booking-date"
+            type="date"
+            class="date-input"
+            [value]="selectedDate()"
+            [min]="minDate"
+            (change)="onDateChange($event)">
+
+          @if (slotsLoading()) {
+            <div class="slots-loading"><span class="app-spinner" aria-hidden="true"></span> جارٍ تحميل المواعيد...</div>
+          }
+
+          @if (!slotsLoading() && slots().length === 0) {
+            <div class="no-slots">لا توجد مواعيد متاحة بهذا التاريخ</div>
+          }
+
+          @if (!slotsLoading() && slots().length > 0) {
+            <div class="slots-grid">
+              @for (slot of slots(); track slot.id) {
+                <button
+                  class="slot-btn"
+                  [class.selected]="selectedSlot()?.id === slot.id"
+                  [class.disabled]="slot.status !== 'AVAILABLE'"
+                  [disabled]="slot.status !== 'AVAILABLE'"
+                  (click)="selectSlot(slot)">
+                  {{ slot.startTime.substring(0,5) }} - {{ slot.endTime.substring(0,5) }}
+                </button>
+              }
+            </div>
+          }
+
+          @if (bookingSuccess()) {
+  <div class="booking-success">
+    <span class="success-icon">✓</span>
+    <p>تم تأكيد حجزك بنجاح!</p>
+    <a routerLink="/customer/my-reservations" class="success-link">عرض حجوزاتي</a>
+  </div>
+}
+
+@if (bookingError()) {
+  <div class="app-inline-message app-inline-message--error" role="alert">
+    {{ bookingError() }}
+  </div>
+}
+
+@if (selectedSlot(); as slot) {
+  <div class="selected-summary">
+    <div class="summary-row">
+      <span>الموعد المختار</span>
+      <span>{{ slot.startTime.substring(0,5) }} - {{ slot.endTime.substring(0,5) }}</span>
+    </div>
+    <div class="summary-row">
+      <span>السعر</span>
+      <span class="summary-price">{{ slot.price }} ₪</span>
+    </div>
+  </div>
+}
+
+<button
+  class="book-btn"
+  [disabled]="!selectedSlot() || bookingLoading()"
+  (click)="proceedToBooking()">
+  @if (bookingLoading()) {
+    جارٍ التأكيد...
+  } @else {
+    {{ authService.isLoggedIn() ? 'تأكيد الحجز' : 'سجّل دخول للحجز' }}
+  }
+</button>
+        </div>
+      </div>
+
+    </div>
+  }
+
+</div>

@@ -88,15 +88,16 @@
   border-radius: auth.$radius-md;
   cursor: pointer;
   font-family: auth.$font;
-  transition: border-color 0.15s ease, background-color 0.15s ease;
+  transition: border-color var(--transition-base), background-color var(--transition-base), transform var(--transition-fast);
 
   &:hover,
   &--selected {
     border-color: auth.$green;
   }
 
-  &:hover { background: auth.$green-lighter; }
+  &:hover { background: auth.$green-lighter; transform: translateY(-2px); }
   &--selected { background: auth.$green-light; }
+  &:active { transform: translateY(0) scale(0.99); }
 
   &:focus-visible {
     outline: 3px solid rgba(22, 163, 74, 0.3);

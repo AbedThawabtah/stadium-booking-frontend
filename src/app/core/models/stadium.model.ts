@@ -42,3 +42,29 @@ export interface StadiumSearchParams {
   size?: number;
   sort?: string; // مثلاً 'pricePerHour,asc'
 }
+
+export interface MyStadium {
+  id: number;
+  name: string;
+  city: string;
+  sportType: string;
+  pricePerHour: number;
+  status: StadiumStatus;
+  averageRating: number | null;
+  totalReviews: number;
+  totalReservations: number;
+  confirmedReservations: number;
+  cancelledReservations: number;
+  completedReservations: number;
+}
+
+export interface StadiumRequest {
+  name: string;
+  description: string;
+  location: string;
+  city: string;
+  sportType: string;
+  capacity: number;
+  pricePerHour: number;
+  contactInfo: string;
+}

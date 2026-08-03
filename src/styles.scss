@@ -41,6 +41,362 @@ body {
   --color-card-bg: #FFFFFF;
   --color-input-bg: #F8FAFC;
   --color-border: #E2E8F0;
+  --color-border-hover: #CBD5E1;
   --color-error: #DC2626;
+  --color-error-light: #FEF2F2;
+  --color-error-border: #FECACA;
   --color-success: #16A34A;
+  --color-warning: #D97706;
+  --color-warning-dark: #92400E;
+  --color-warning-light: #FEF3C7;
+  --color-info: #4338CA;
+  --color-info-light: #E0E7FF;
+  --color-hover-tint: #F0FDF4;
+
+  // Gradients — reuse everywhere instead of ad-hoc angles/stops per page.
+  --gradient-primary: linear-gradient(135deg, #16A34A 0%, #15803D 100%);
+  --gradient-hero: linear-gradient(155deg, #0F172A 0%, #15803D 55%, #16A34A 100%);
+
+  // Shape scale.
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-pill: 999px;
+
+  // Elevation scale — soft, low-opacity, larger blur than spread.
+  --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.05), 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-md: 0 4px 16px rgba(15, 23, 42, 0.07), 0 2px 6px rgba(15, 23, 42, 0.04);
+  --shadow-lg: 0 12px 32px rgba(15, 23, 42, 0.11), 0 4px 12px rgba(15, 23, 42, 0.05);
+  --shadow-primary: 0 8px 20px rgba(21, 128, 61, 0.28);
+
+  // Motion tokens.
+  --transition-fast: 150ms ease;
+  --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 400ms ease;
+
+  // Type scale (roles shared across every page).
+  --font-page-title: 700 26px/1.3 'Cairo', sans-serif;
+  --font-section-title: 700 16px/1.4 'Cairo', sans-serif;
+  --font-card-title: 700 16px/1.35 'Cairo', sans-serif;
+  --font-body: 400 14px/1.6 'Cairo', sans-serif;
+  --font-meta: 600 12.5px/1.5 'Cairo', sans-serif;
+}
+
+// ---------------------------------------------------------------------------
+// Shared presentational utilities — the single source for card, button,
+// badge, empty-state and page-header treatments across every page.
+// ---------------------------------------------------------------------------
+.app-card {
+  background: var(--color-card-bg);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition-base), box-shadow var(--transition-base), border-color var(--transition-base);
+}
+
+.app-card--interactive {
+  cursor: pointer;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  &:focus-visible {
+    outline: 3px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+}
+
+.app-row {
+  background: var(--color-card-bg);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition-base), box-shadow var(--transition-base), background-color var(--transition-base);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+}
+
+// Buttons -------------------------------------------------------------------
+.app-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 10px 20px;
+  font-family: 'Cairo', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  border: none;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), background-color var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast), filter var(--transition-fast);
+
+  &:hover:not(:disabled) { transform: translateY(-1px); }
+  &:active:not(:disabled) { transform: translateY(0) scale(0.98); }
+
+  &:focus-visible {
+    outline: 3px solid rgba(22, 163, 74, 0.35);
+    outline-offset: 2px;
+  }
+
+  &:disabled { cursor: not-allowed; opacity: 0.6; }
+}
+
+.app-btn-primary {
+  @extend .app-btn;
+  background: var(--gradient-primary);
+  color: #fff;
+  box-shadow: var(--shadow-primary);
+
+  &:hover:not(:disabled) { box-shadow: 0 10px 24px rgba(21, 128, 61, 0.34); }
+  &:disabled { box-shadow: none; background: #94A3B8; }
+}
+
+.app-btn-secondary {
+  @extend .app-btn;
+  background: var(--color-card-bg);
+  color: var(--color-text);
+  border: 1.5px solid var(--color-border);
+
+  &:hover:not(:disabled) {
+    background: var(--color-hover-tint);
+    border-color: var(--color-primary);
+    color: var(--color-primary-dark);
+  }
+}
+
+.app-btn-danger {
+  @extend .app-btn;
+  background: var(--color-error-light);
+  color: var(--color-error);
+  border: 1.5px solid var(--color-error-border);
+
+  &:hover:not(:disabled) { background: #FEE2E2; }
+}
+
+// Status badges ---------------------------------------------------------------
+.app-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+  line-height: 1.6;
+  animation: app-pop-in var(--transition-base) both;
+
+  &--success { background: var(--color-primary-light); color: var(--color-primary-dark); }
+  &--error { background: var(--color-error-light); color: var(--color-error); }
+  &--warning { background: var(--color-warning-light); color: var(--color-warning-dark); }
+  &--info { background: var(--color-info-light); color: var(--color-info); }
+  &--neutral { background: var(--color-input-bg); color: var(--color-text-secondary); }
+}
+
+@keyframes app-pop-in {
+  from { opacity: 0; transform: scale(0.85); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+// Empty state -----------------------------------------------------------------
+.app-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 56px 16px;
+  animation: app-fade-up var(--transition-slow) both;
+
+  &__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    height: 64px;
+    border-radius: var(--radius-lg);
+    background: var(--color-primary-light);
+    color: var(--color-primary-dark);
+    margin-bottom: 16px;
+    font-size: 28px;
+  }
+
+  h2 {
+    font: var(--font-card-title);
+    color: var(--color-navy);
+    margin: 0 0 6px;
+  }
+
+  p {
+    font: var(--font-body);
+    color: var(--color-text-secondary);
+    margin: 0 0 18px;
+    max-width: 360px;
+  }
+}
+
+// Page header -------------------------------------------------------------
+.app-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 24px;
+
+  h1 {
+    font: var(--font-page-title);
+    color: var(--color-navy);
+    margin: 0;
+  }
+
+  p {
+    font: var(--font-body);
+    color: var(--color-text-secondary);
+    margin: 4px 0 0;
+  }
+}
+
+// Spinner -----------------------------------------------------------------
+.app-spinner {
+  display: inline-flex;
+  width: 20px;
+  height: 20px;
+  border: 2.5px solid var(--color-border);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: app-spin 0.7s linear infinite;
+}
+
+@keyframes app-spin {
+  to { transform: rotate(360deg); }
+}
+
+.app-loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 72px 16px;
+  color: var(--color-text-secondary);
+  font: var(--font-body);
+
+  .app-spinner {
+    width: 32px;
+    height: 32px;
+    border-width: 3px;
+  }
+}
+
+// Skeleton loading ----------------------------------------------------------
+.app-skeleton {
+  position: relative;
+  overflow: hidden;
+  background: var(--color-border);
+  border-radius: var(--radius-sm);
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, var(--color-input-bg), transparent);
+    animation: app-shimmer 1.5s ease-in-out infinite;
+  }
+}
+
+@keyframes app-shimmer {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(100%); }
+}
+
+// Inline alert / message banners --------------------------------------------
+.app-inline-message {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 600;
+  animation: app-slide-fade var(--transition-base) both;
+
+  &--success { background: var(--color-primary-light); color: var(--color-primary-dark); }
+  &--error { background: var(--color-error-light); color: var(--color-error); }
+}
+
+@keyframes app-slide-fade {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes app-fade-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+// Staggered entrance for grids/lists — capped so long lists render fast.
+// Apply `.app-stagger-item` to each item in a @for/*ngFor loop.
+.app-stagger-item {
+  animation: app-fade-up var(--transition-slow) both;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @for $i from 1 through 10 {
+    .app-stagger-item:nth-child(#{$i}) {
+      animation-delay: #{($i - 1) * 45}ms;
+    }
+  }
+}
+
+// Shared form-field focus treatment (plain HTML inputs/selects/textareas).
+.app-field {
+  width: 100%;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-input-bg);
+  font-family: 'Cairo', sans-serif;
+  color: var(--color-text);
+  outline: none;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background-color var(--transition-fast);
+
+  &:hover { border-color: var(--color-border-hover); }
+
+  &:focus,
+  &:focus-visible {
+    border-color: var(--color-primary);
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.14);
+  }
+}
+
+// Tab bars with a sliding active indicator (fixed, equal-width tab sets).
+.app-tabs-underline {
+  position: relative;
+  display: flex;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-stagger-item,
+  .app-empty-state,
+  .app-badge,
+  .app-inline-message {
+    animation: none !important;
+  }
+
+  .app-card,
+  .app-row,
+  .app-btn,
+  .app-btn-primary,
+  .app-btn-secondary,
+  .app-btn-danger,
+  .app-field {
+    transition: none !important;
+  }
 }

@@ -1,0 +1,44 @@
+<div class="page-container">
+  <h1>سجل النشاطات</h1>
+  <app-admin-nav></app-admin-nav>
+
+  @if (loading()) {
+    <div class="logs-list" aria-hidden="true">
+      @for (i of [1,2,3,4,5]; track i) {
+        <div class="log-row">
+          <div class="app-skeleton al-skeleton__badge"></div>
+          <div class="log-body">
+            <div class="app-skeleton al-skeleton__line al-skeleton__line--desc"></div>
+            <div class="app-skeleton al-skeleton__line al-skeleton__line--meta"></div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  @if (!loading() && errorMessage()) {
+    <div class="app-inline-message app-inline-message--error page-alert" role="alert">{{ errorMessage() }}</div>
+  }
+
+  @if (!loading() && !errorMessage() && logs().length === 0) {
+    <div class="app-empty-state">
+      <span class="app-empty-state__icon" aria-hidden="true">🕓</span>
+      <h2>لا توجد نشاطات مسجلة</h2>
+      <p>ستظهر هنا الأحداث والإجراءات فور حدوثها</p>
+    </div>
+  }
+
+  @if (!loading() && logs().length > 0) {
+    <div class="logs-list">
+      @for (log of logs(); track log.id) {
+        <div class="log-row app-stagger-item">
+          <span class="app-badge app-badge--success">{{ log.eventType }}</span>
+          <div class="log-body">
+            <p class="description">{{ log.description }}</p>
+            <p class="meta">{{ log.userName }} · {{ log.entityType }} #{{ log.entityId }} · {{ log.createdAt }}</p>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

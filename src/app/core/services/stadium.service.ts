@@ -2,7 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { PageResponse, Stadium, StadiumSearchParams } from '../models/stadium.model';
+import { PageResponse, Stadium, StadiumRequest,MyStadium, StadiumSearchParams } from '../models/stadium.model';
 
 @Injectable({ providedIn: 'root' })
 export class StadiumService {
@@ -34,4 +34,16 @@ export class StadiumService {
   getById(id: number): Observable<Stadium> {
     return this.http.get<Stadium>(`${this.apiUrl}/${id}`);
   }
+
+  getMyStadiums(): Observable<MyStadium[]> {
+  return this.http.get<MyStadium[]>(`${this.apiUrl}/my-stadiums`);
+}
+
+createStadium(request: StadiumRequest): Observable<Stadium> {
+  return this.http.post<Stadium>(this.apiUrl, request);
+}
+
+updateStadium(id: number, request: StadiumRequest): Observable<Stadium> {
+  return this.http.put<Stadium>(`${this.apiUrl}/${id}`, request);
+}
 }
