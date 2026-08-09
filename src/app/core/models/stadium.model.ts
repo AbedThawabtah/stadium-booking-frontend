@@ -16,6 +16,7 @@ export interface Stadium {
   createdAt: string;
   ownerId: number;
   ownerName: string;
+  primaryImageUrl: string | null;
 }
 
 // شكل الرد الافتراضي لـ Page<> بـ Spring Boot 3.3+/4.x

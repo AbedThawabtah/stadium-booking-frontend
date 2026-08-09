@@ -1,22 +1,35 @@
 .admin-tabs {
-  position: relative;
   display: flex;
+  gap: 6px;
   margin-bottom: 24px;
-  border-bottom: 1px solid var(--color-border);
+  padding: 6px;
+  background: var(--color-card-bg);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
   overflow-x: auto;
 }
 
 .admin-tab {
-  flex: 1 1 110px;
-  text-align: center;
-  padding: 12px 14px;
+  position: relative;
+  flex: 1 1 120px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
   text-decoration: none;
-  border-bottom: 2px solid transparent;
-  font-weight: 600;
-  font-size: 14px;
+  font-weight: 700;
+  font-size: 13.5px;
   color: var(--color-text-secondary);
   white-space: nowrap;
   transition: color var(--transition-base), background-color var(--transition-base);
+
+  &__icon {
+    flex: none;
+    opacity: 0.75;
+    transition: opacity var(--transition-base);
+  }
 
   &:hover {
     color: var(--color-primary-dark);
@@ -25,35 +38,49 @@
 
   &:focus-visible {
     outline: 2px solid var(--color-primary);
-    outline-offset: -2px;
+    outline-offset: 2px;
   }
 
   &.active {
-    color: var(--color-primary-dark);
+    color: #fff;
+    background: var(--gradient-primary);
+
+    .admin-tab__icon { opacity: 1; }
   }
 }
 
-.admin-tabs__indicator {
-  position: absolute;
-  bottom: -1px;
-  inset-inline-start: 0%;
-  width: calc(100% / 5);
-  height: 2px;
+.admin-tab__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
   border-radius: var(--radius-pill);
-  background: var(--gradient-primary);
-  transition: inset-inline-start var(--transition-base);
-  pointer-events: none;
+  background: var(--color-warning);
+  color: #fff;
+  font-size: 10.5px;
+  font-weight: 800;
+  transition: background-color var(--transition-fast), color var(--transition-fast);
 }
 
-.admin-tabs:has(.admin-tab:nth-child(1).active) .admin-tabs__indicator { inset-inline-start: 0%; }
-.admin-tabs:has(.admin-tab:nth-child(2).active) .admin-tabs__indicator { inset-inline-start: 20%; }
-.admin-tabs:has(.admin-tab:nth-child(3).active) .admin-tabs__indicator { inset-inline-start: 40%; }
-.admin-tabs:has(.admin-tab:nth-child(4).active) .admin-tabs__indicator { inset-inline-start: 60%; }
-.admin-tabs:has(.admin-tab:nth-child(5).active) .admin-tabs__indicator { inset-inline-start: 80%; }
+.admin-tab.active .admin-tab__badge {
+  background: #fff;
+  color: var(--color-warning-dark);
+}
+
+@media (max-width: 640px) {
+  .admin-tab {
+    flex: 1 1 auto;
+    padding: 9px 12px;
+    font-size: 12.5px;
+  }
+}
 
 @media (prefers-reduced-motion: reduce) {
   .admin-tab,
-  .admin-tabs__indicator {
+  .admin-tab__icon,
+  .admin-tab__badge {
     transition: none;
   }
 }

@@ -3,10 +3,30 @@
   <h1>حجوزاتي</h1>
 
   <div class="tabs">
-    <button class="tab" [class.active]="activeTab() === 'ALL'" (click)="setTab('ALL')">الكل</button>
-    <button class="tab" [class.active]="activeTab() === 'CONFIRMED'" (click)="setTab('CONFIRMED')">مؤكدة</button>
-    <button class="tab" [class.active]="activeTab() === 'COMPLETED'" (click)="setTab('COMPLETED')">مكتملة</button>
-    <button class="tab" [class.active]="activeTab() === 'CANCELLED'" (click)="setTab('CANCELLED')">ملغاة</button>
+    <button class="tab" [class.active]="activeTab() === 'ALL'" (click)="setTab('ALL')">
+      الكل
+      @if (tabCounts().ALL > 0) {
+        <span class="tab__count">{{ tabCounts().ALL }}</span>
+      }
+    </button>
+    <button class="tab" [class.active]="activeTab() === 'CONFIRMED'" (click)="setTab('CONFIRMED')">
+      مؤكدة
+      @if (tabCounts().CONFIRMED > 0) {
+        <span class="tab__count">{{ tabCounts().CONFIRMED }}</span>
+      }
+    </button>
+    <button class="tab" [class.active]="activeTab() === 'COMPLETED'" (click)="setTab('COMPLETED')">
+      مكتملة
+      @if (tabCounts().COMPLETED > 0) {
+        <span class="tab__count">{{ tabCounts().COMPLETED }}</span>
+      }
+    </button>
+    <button class="tab" [class.active]="activeTab() === 'CANCELLED'" (click)="setTab('CANCELLED')">
+      ملغاة
+      @if (tabCounts().CANCELLED > 0) {
+        <span class="tab__count">{{ tabCounts().CANCELLED }}</span>
+      }
+    </button>
     <span class="tabs__indicator" aria-hidden="true"></span>
   </div>
 
@@ -15,6 +35,7 @@
       @for (i of [1,2,3]; track i) {
         <div class="reservation-card">
           <div class="card-main">
+            <div class="app-skeleton res-skeleton__chip"></div>
             <div class="card-info">
               <div class="app-skeleton res-skeleton__line res-skeleton__line--title"></div>
               <div class="app-skeleton res-skeleton__line res-skeleton__line--meta"></div>
@@ -33,73 +54,132 @@
 
   @if (!loading() && !errorMessage() && filteredReservations().length === 0) {
     <div class="app-empty-state">
-      <span class="app-empty-state__icon" aria-hidden="true">📅</span>
-      <h2>لا توجد حجوزات هنا</h2>
-      <p>لم تقم بأي حجز ضمن هذا التصنيف بعد</p>
+      <span class="app-empty-state__icon" aria-hidden="true">{{ emptyStateCopy().icon }}</span>
+      <h2>{{ emptyStateCopy().title }}</h2>
+      <p>{{ emptyStateCopy().text }}</p>
       <a routerLink="/stadiums" class="app-btn-primary">تصفح الملاعب الآن</a>
     </div>
   }
 
-  @if (!loading() && filteredReservations().length > 0) {
-    <div class="reservations-list">
-      @for (reservation of filteredReservations(); track reservation.id) {
-        <div class="reservation-card app-stagger-item">
+  <ng-template #reservationCard let-reservation>
+    <div class="reservation-card app-stagger-item">
 
-          <div class="card-main">
-            <div class="card-info">
-              <h3>{{ reservation.stadiumName }}</h3>
-              <p class="date-time">
-                {{ reservation.reservationDate }} · {{ reservation.startTime.substring(0,5) }} - {{ reservation.endTime.substring(0,5) }}
-              </p>
-              <p class="price">{{ reservation.totalPrice }} ₪</p>
-            </div>
+      <div class="card-main">
+        <div class="date-chip"
+             [class.date-chip--confirmed]="reservation.status === 'CONFIRMED'"
+             [class.date-chip--completed]="reservation.status === 'COMPLETED'"
+             [class.date-chip--cancelled]="reservation.status === 'CANCELLED'"
+             aria-hidden="true">
+          <span class="date-chip__day">{{ dateChipDay(reservation) }}</span>
+          <span class="date-chip__month">{{ dateChipMonth(reservation) }}</span>
+        </div>
 
-            <div class="card-status">
-              <span class="app-badge"
-                    [class.app-badge--success]="reservation.status === 'CONFIRMED'"
-                    [class.app-badge--error]="reservation.status === 'CANCELLED'"
-                    [class.app-badge--info]="reservation.status === 'COMPLETED'">
-                {{ statusLabel(reservation.status) }}
-              </span>
-
-              @if (isCancellable(reservation) && cancellingId() !== reservation.id) {
-                <button class="cancel-link" (click)="openCancelForm(reservation.id)">إلغاء الحجز</button>
-              }
-            </div>
+        <div class="card-info">
+          <div class="card-info__top">
+            <h3>{{ reservation.stadiumName }}</h3>
+            @if (cancelWindowStatus(reservation) === 'open') {
+              <span class="cancel-window-hint cancel-window-hint--open">قابل للإلغاء</span>
+            }
+            @if (cancelWindowStatus(reservation) === 'closing') {
+              <span class="cancel-window-hint cancel-window-hint--closing">أقل من ساعتين على الموعد</span>
+            }
           </div>
 
-          @if (reservation.status === 'CANCELLED' && reservation.cancellationReason) {
-            <p class="cancellation-note">سبب الإلغاء: {{ reservation.cancellationReason }}</p>
+          <p class="date-time">
+            <span>{{ dateChipWeekday(reservation) }}</span>
+            <span class="date-time__sep" aria-hidden="true">·</span>
+            <span>{{ reservation.startTime.substring(0,5) }} - {{ reservation.endTime.substring(0,5) }}</span>
+            @if (relativeDayLabel(reservation); as rel) {
+              <span class="relative-day" [class.relative-day--today]="rel === 'اليوم'">{{ rel }}</span>
+            }
+          </p>
+
+          <p class="price">{{ reservation.totalPrice }} ₪</p>
+        </div>
+
+        <div class="card-status">
+          <span class="app-badge"
+                [class.app-badge--success]="reservation.status === 'CONFIRMED'"
+                [class.app-badge--error]="reservation.status === 'CANCELLED'"
+                [class.app-badge--info]="reservation.status === 'COMPLETED'">
+            {{ statusLabel(reservation.status) }}
+          </span>
+
+          @if (isCancellable(reservation) && cancellingId() !== reservation.id) {
+            <button class="cancel-trigger" (click)="openCancelForm(reservation.id)">
+              <svg viewBox="0 0 24 24" width="12" height="12" aria-hidden="true">
+                <line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"></line>
+                <line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"></line>
+              </svg>
+              <span>إلغاء الحجز</span>
+            </button>
+          }
+        </div>
+      </div>
+
+      @if (reservation.status === 'CANCELLED' && reservation.cancellationReason) {
+        <p class="cancellation-note">سبب الإلغاء: {{ reservation.cancellationReason }}</p>
+      }
+
+      @if (cancellingId() === reservation.id) {
+        <div class="cancel-form">
+          <div class="cancel-form__intro">
+            <span class="cancel-form__icon" aria-hidden="true">⚠️</span>
+            <p>سيتم إلغاء هذا الحجز نهائيًا. يمكنك إضافة سبب اختياري قبل التأكيد.</p>
+          </div>
+
+          <label for="reason-{{reservation.id}}">سبب الإلغاء (اختياري)</label>
+          <textarea
+            class="app-field"
+            id="reason-{{reservation.id}}"
+            [value]="cancelReason()"
+            (input)="cancelReason.set($any($event.target).value)"
+            rows="2"
+            placeholder="اكتب سبب الإلغاء إن أردت..."></textarea>
+
+          @if (cancelError()) {
+            <div class="app-inline-message app-inline-message--error" role="alert">{{ cancelError() }}</div>
           }
 
-          @if (cancellingId() === reservation.id) {
-            <div class="cancel-form">
-              <label for="reason-{{reservation.id}}">سبب الإلغاء (اختياري)</label>
-              <textarea
-                class="app-field"
-                id="reason-{{reservation.id}}"
-                [value]="cancelReason()"
-                (input)="cancelReason.set($any($event.target).value)"
-                rows="2"
-                placeholder="اكتب سبب الإلغاء إن أردت..."></textarea>
-
-              @if (cancelError()) {
-                <div class="app-inline-message app-inline-message--error" role="alert">{{ cancelError() }}</div>
-              }
-
-              <div class="cancel-actions">
-                <button class="app-btn-secondary" (click)="closeCancelForm()" [disabled]="cancelSubmitting()">
-                  تراجع
-                </button>
-                <button class="app-btn-danger" (click)="confirmCancel(reservation.id)" [disabled]="cancelSubmitting()">
-                  {{ cancelSubmitting() ? 'جارٍ الإلغاء...' : 'تأكيد الإلغاء' }}
-                </button>
-              </div>
-            </div>
-          }
-
+          <div class="cancel-actions">
+            <button class="app-btn-secondary" (click)="closeCancelForm()" [disabled]="cancelSubmitting()">
+              تراجع
+            </button>
+            <button class="app-btn-danger" (click)="confirmCancel(reservation.id)" [disabled]="cancelSubmitting()">
+              {{ cancelSubmitting() ? 'جارٍ الإلغاء...' : 'تأكيد الإلغاء' }}
+            </button>
+          </div>
         </div>
       }
+
+    </div>
+  </ng-template>
+
+  @if (!loading() && filteredReservations().length > 0) {
+    <div class="reservations-list">
+
+      @if (upcomingReservations().length > 0) {
+        <div class="list-section">
+          <h2 class="list-section__title">
+            القادمة <span class="list-section__count">{{ upcomingReservations().length }}</span>
+          </h2>
+          @for (reservation of upcomingReservations(); track reservation.id) {
+            <ng-container [ngTemplateOutlet]="reservationCard" [ngTemplateOutletContext]="{ $implicit: reservation }"></ng-container>
+          }
+        </div>
+      }
+
+      @if (pastReservations().length > 0) {
+        <div class="list-section">
+          <h2 class="list-section__title">
+            السابقة <span class="list-section__count">{{ pastReservations().length }}</span>
+          </h2>
+          @for (reservation of pastReservations(); track reservation.id) {
+            <ng-container [ngTemplateOutlet]="reservationCard" [ngTemplateOutletContext]="{ $implicit: reservation }"></ng-container>
+          }
+        </div>
+      }
+
     </div>
   }
 

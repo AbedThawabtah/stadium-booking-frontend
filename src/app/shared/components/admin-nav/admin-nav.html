@@ -1,8 +1,49 @@
-<nav class="admin-tabs">
-  <a routerLink="/admin/dashboard" routerLinkActive="active" class="admin-tab">الداشبورد</a>
-  <a routerLink="/admin/stadiums" routerLinkActive="active" class="admin-tab">الملاعب</a>
-  <a routerLink="/admin/users" routerLinkActive="active" class="admin-tab">المستخدمين</a>
-  <a routerLink="/admin/reviews" routerLinkActive="active" class="admin-tab">التقييمات</a>
-  <a routerLink="/admin/activity-logs" routerLinkActive="active" class="admin-tab">سجل النشاطات</a>
-  <span class="admin-tabs__indicator" aria-hidden="true"></span>
+<nav class="admin-tabs" aria-label="أقسام لوحة تحكم الأدمن">
+  <a routerLink="/admin/dashboard" routerLinkActive="active" class="admin-tab">
+    <svg class="admin-tab__icon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+      <rect x="3" y="3" width="7" height="7" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.8"></rect>
+      <rect x="14" y="3" width="7" height="7" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.8"></rect>
+      <rect x="3" y="14" width="7" height="7" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.8"></rect>
+      <rect x="14" y="14" width="7" height="7" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.8"></rect>
+    </svg>
+    <span>الداشبورد</span>
+  </a>
+
+  <a routerLink="/admin/stadiums" routerLinkActive="active" class="admin-tab">
+    <svg class="admin-tab__icon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+      <circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="1.6"></circle>
+      <path d="M12 6.2l3.6 2.6-1.4 4.2h-4.4l-1.4-4.2z" fill="currentColor"></path>
+    </svg>
+    <span>الملاعب</span>
+    @if (pendingStadiumsCount() > 0) {
+      <span class="admin-tab__badge">{{ pendingStadiumsCount() }}</span>
+    }
+  </a>
+
+  <a routerLink="/admin/users" routerLinkActive="active" class="admin-tab">
+    <svg class="admin-tab__icon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+      <circle cx="12" cy="8" r="3.6" fill="none" stroke="currentColor" stroke-width="1.8"></circle>
+      <path d="M4.5 20c1.2-4 4-6 7.5-6s6.3 2 7.5 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path>
+    </svg>
+    <span>المستخدمين</span>
+  </a>
+
+  <a routerLink="/admin/reviews" routerLinkActive="active" class="admin-tab">
+    <svg class="admin-tab__icon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+      <path d="M12 3.5l2.6 5.4 5.9.6-4.4 4 1.2 5.8L12 16.4l-5.3 2.9 1.2-5.8-4.4-4 5.9-.6z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"></path>
+    </svg>
+    <span>التقييمات</span>
+    @if (pendingReviewsCount() > 0) {
+      <span class="admin-tab__badge">{{ pendingReviewsCount() }}</span>
+    }
+  </a>
+
+  <a routerLink="/admin/activity-logs" routerLinkActive="active" class="admin-tab">
+    <svg class="admin-tab__icon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+      <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"></circle>
+      <line x1="12" y1="7" x2="12" y2="12.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></line>
+      <line x1="12" y1="12.5" x2="15.2" y2="14.3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></line>
+    </svg>
+    <span>سجل النشاطات</span>
+  </a>
 </nav>

@@ -1,8 +1,14 @@
 <div class="page-container">
   <h1>إدارة الملاعب</h1>
+  <p class="page-subtitle">راجع طلبات الملاعب الجديدة ووافق عليها أو ارفضها قبل ظهورها للمستخدمين</p>
   <app-admin-nav></app-admin-nav>
 
-  <div class="section-header">طلبات بانتظار الموافقة</div>
+  <div class="section-header">
+    طلبات بانتظار الموافقة
+    @if (!loading() && pendingStadiums().length > 0) {
+      <span class="section-header__count">{{ pendingStadiums().length }}</span>
+    }
+  </div>
 
   @if (loading()) {
     <div class="stadiums-list" aria-hidden="true">
@@ -35,7 +41,10 @@
       @for (stadium of pendingStadiums(); track stadium.id) {
         <div class="stadium-row app-stagger-item">
           <div class="stadium-info">
-            <h3>{{ stadium.name }} <span class="id-tag">#{{ stadium.id }}</span></h3>
+            <div class="stadium-info__top">
+              <h3>{{ stadium.name }} <span class="id-tag">#{{ stadium.id }}</span></h3>
+              <span class="app-badge app-badge--warning">بانتظار الموافقة</span>
+            </div>
             <p>{{ stadium.city }} · {{ stadium.sportType }} · {{ stadium.pricePerHour }} ₪/ساعة</p>
             <p class="owner">المالك: {{ stadium.ownerName }}</p>
           </div>
@@ -59,16 +68,31 @@
   }
 
   <div class="quick-action-box">
-    <div class="section-header">إجراء سريع (حسب رقم الملعب)</div>
-    <p class="quick-hint">
-      لإيقاف ملعب نشط أو إعادة تفعيل ملعب موقوف، أدخل رقم الملعب (ID) مباشرة — لا توجد حالياً قائمة شاملة لكل الملاعب بكل الحالات.
-    </p>
+    <div class="quick-action-box__header">
+      <span class="quick-action-box__icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="18" height="18">
+          <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"></circle>
+          <line x1="12" y1="7.5" x2="12" y2="13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></line>
+          <circle cx="12" cy="16.3" r="1.1" fill="currentColor"></circle>
+        </svg>
+      </span>
+      <div>
+        <h2>تغيير حالة ملعب نشط أو موقوف</h2>
+        <p class="quick-hint">
+          لا توجد حاليًا قائمة تعرض كل الملاعب بكل الحالات — إذا كان الملعب المطلوب غير موجود في القائمة أعلاه (لأنه ليس بانتظار موافقة)، أدخل رقمه (ID) هنا مباشرة لتغيير حالته.
+        </p>
+      </div>
+    </div>
+
     <div class="quick-form">
       <input type="number" placeholder="رقم الملعب" [ngModel]="quickStadiumId()" (ngModelChange)="quickStadiumId.set($event)">
-      <button (click)="runQuickAction('approve')" [disabled]="quickActionLoading() || !quickStadiumId()">موافقة</button>
-      <button (click)="runQuickAction('suspend')" [disabled]="quickActionLoading() || !quickStadiumId()">إيقاف</button>
-      <button (click)="runQuickAction('reactivate')" [disabled]="quickActionLoading() || !quickStadiumId()">إعادة تفعيل</button>
+      <div class="quick-form__actions">
+        <button class="quick-form__btn quick-form__btn--approve" (click)="runQuickAction('approve')" [disabled]="quickActionLoading() || !quickStadiumId()">موافقة</button>
+        <button class="quick-form__btn quick-form__btn--suspend" (click)="runQuickAction('suspend')" [disabled]="quickActionLoading() || !quickStadiumId()">إيقاف</button>
+        <button class="quick-form__btn quick-form__btn--reactivate" (click)="runQuickAction('reactivate')" [disabled]="quickActionLoading() || !quickStadiumId()">إعادة تفعيل</button>
+      </div>
     </div>
+
     @if (quickActionMessage(); as msg) {
       <div class="app-inline-message" [class.app-inline-message--success]="msg.type === 'success'" [class.app-inline-message--error]="msg.type === 'error'" role="alert">{{ msg.text }}</div>
     }

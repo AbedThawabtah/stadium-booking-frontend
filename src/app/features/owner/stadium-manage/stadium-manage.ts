@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
@@ -32,7 +32,7 @@ const DAYS: { key: DayOfWeek; label: string }[] = [
   templateUrl: './stadium-manage.html',
   styleUrl: './stadium-manage.scss'
 })
-export class StadiumManageComponent implements OnInit {
+export class StadiumManageComponent implements OnInit, OnDestroy {
 
   private route = inject(ActivatedRoute);
   private fb = inject(FormBuilder);
@@ -77,6 +77,7 @@ export class StadiumManageComponent implements OnInit {
 
   generating = signal(false);
   generateMessage = signal<{ type: 'success' | 'error'; text: string } | null>(null);
+  private generateMessageTimer: ReturnType<typeof setTimeout> | null = null;
 
   previewDate = signal<string>(this.todayIso());
   previewSlots = signal<TimeSlot[]>([]);
@@ -99,6 +100,12 @@ export class StadiumManageComponent implements OnInit {
 
   setTab(tab: Tab): void {
     this.activeTab.set(tab);
+  }
+
+  ngOnDestroy(): void {
+    if (this.generateMessageTimer) {
+      clearTimeout(this.generateMessageTimer);
+    }
   }
 
   private loadStadium(id: number): void {
@@ -156,6 +163,18 @@ export class StadiumManageComponent implements OnInit {
   }
 
   // ── توليد السلوتات ──
+  // يعرض رسالة النجاح/الخطأ ثم يخفيها تلقائيًا بعد 5 ثوانٍ، مع إلغاء أي مؤقّت سابق معلّق
+  private setGenerateMessage(message: { type: 'success' | 'error'; text: string }): void {
+    if (this.generateMessageTimer) {
+      clearTimeout(this.generateMessageTimer);
+    }
+    this.generateMessage.set(message);
+    this.generateMessageTimer = setTimeout(() => {
+      this.generateMessage.set(null);
+      this.generateMessageTimer = null;
+    }, 5000);
+  }
+
   generateSlots(): void {
     this.generating.set(true);
     this.generateMessage.set(null);
@@ -176,7 +195,7 @@ export class StadiumManageComponent implements OnInit {
     request$.subscribe({
       next: (slots) => {
         this.generating.set(false);
-        this.generateMessage.set({
+        this.setGenerateMessage({
           type: 'success',
           text: `تم توليد ${slots.length} موعد بنجاح`
         });
@@ -187,17 +206,17 @@ export class StadiumManageComponent implements OnInit {
         const body = err.error as ErrorResponse;
 
         if (err.status === 409) {
-  this.generateMessage.set({
+  this.setGenerateMessage({
     type: 'error',
     text: 'يوجد تعارض مع مواعيد موجودة مسبقًا لنفس التاريخ'
   });
 } else if (err.status === 400) {
-  this.generateMessage.set({
+  this.setGenerateMessage({
     type: 'error',
     text: 'لا يمكن توليد مواعيد لتاريخ في الماضي أو ببيانات غير صحيحة'
   });
 } else {
-  this.generateMessage.set({
+  this.setGenerateMessage({
     type: 'error',
     text: 'تعذر توليد المواعيد. حاول مرة أخرى'
   });
