@@ -1,14 +1,21 @@
 <div class="page-container">
   <h1>إدارة المستخدمين</h1>
+  <p class="page-subtitle">فعّل أو عطّل حسابات المستخدمين حسب الحاجة</p>
   <app-admin-nav></app-admin-nav>
 
   <div class="filters-bar">
-    <input
-      type="text"
-      placeholder="ابحث بالاسم أو البريد الإلكتروني..."
-      [ngModel]="searchTerm()"
-      (ngModelChange)="searchTerm.set($event)"
-      class="search-input">
+    <div class="search-field">
+      <svg class="search-field__icon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+        <circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65" stroke="currentColor" stroke-width="2" stroke-linecap="round"></line>
+      </svg>
+      <input
+        type="text"
+        placeholder="ابحث بالاسم أو البريد الإلكتروني..."
+        [ngModel]="searchTerm()"
+        (ngModelChange)="searchTerm.set($event)"
+        class="search-input">
+    </div>
 
     <div class="role-tabs">
       <button class="role-tab" [class.active]="roleFilter() === 'ALL'" (click)="setRoleFilter('ALL')">الكل</button>
@@ -61,7 +68,9 @@
             {{ roleLabel(user.role) }}
           </span>
 
-          <span class="status-dot" [class.active]="user.isActive" [class.inactive]="!user.isActive">
+          <span class="app-badge"
+                [class.app-badge--success]="user.isActive"
+                [class.app-badge--error]="!user.isActive">
             {{ user.isActive ? 'نشط' : 'معطّل' }}
           </span>
 

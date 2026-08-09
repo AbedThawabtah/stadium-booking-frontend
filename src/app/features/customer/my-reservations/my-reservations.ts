@@ -8,6 +8,13 @@ import { ErrorResponse } from '../../../core/models/auth.model';
 
 type FilterTab = 'ALL' | ReservationStatus;
 
+// أسماء عربية ثابتة لعرض التاريخ داخل بطاقة الحجز — لا تعتمد على locale المتصفح
+const MONTHS_AR = [
+  'يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
+  'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'
+];
+const WEEKDAYS_AR = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+
 @Component({
   selector: 'app-my-reservations',
   standalone: true,
@@ -113,5 +120,82 @@ export class MyReservationsComponent implements OnInit {
       case 'CANCELLED': return 'ملغى';
       case 'COMPLETED': return 'مكتمل';
     }
+  }
+
+  // ---------------------------------------------------------------------
+  // UI-only derived views for the elevated presentation below. Pure reads
+  // over the signals/computed above — no new data fetching, and nothing
+  // above this point was changed.
+  // ---------------------------------------------------------------------
+
+  private isUpcoming(reservation: Reservation): boolean {
+    const slotStart = new Date(`${reservation.reservationDate}T${reservation.startTime}`);
+    return slotStart.getTime() > Date.now();
+  }
+
+  // حجوزات مؤكدة وقادمة — تُعرض تحت قسم "القادمة"
+  upcomingReservations = computed(() =>
+    this.filteredReservations().filter(r => r.status === 'CONFIRMED' && this.isUpcoming(r))
+  );
+
+  // كل شيء آخر ضمن التبويب الحالي (مكتملة/ملغاة/أو مؤكدة فات وقتها) — قسم "السابقة"
+  pastReservations = computed(() =>
+    this.filteredReservations().filter(r => !(r.status === 'CONFIRMED' && this.isUpcoming(r)))
+  );
+
+  // عدد الحجوزات لكل تبويب، بغض النظر عن التبويب النشط حاليًا
+  tabCounts = computed(() => {
+    const all = this.reservations();
+    return {
+      ALL: all.length,
+      CONFIRMED: all.filter(r => r.status === 'CONFIRMED').length,
+      COMPLETED: all.filter(r => r.status === 'COMPLETED').length,
+      CANCELLED: all.filter(r => r.status === 'CANCELLED').length
+    };
+  });
+
+  // نص الحالة الفارغة يتغيّر حسب التبويب النشط
+  emptyStateCopy = computed(() => {
+    switch (this.activeTab()) {
+      case 'CONFIRMED':
+        return { icon: '🗓️', title: 'لا توجد حجوزات مؤكدة حاليًا', text: 'احجز ملعبك القادم وستظهر تفاصيله هنا.' };
+      case 'COMPLETED':
+        return { icon: '✅', title: 'لا توجد حجوزات مكتملة بعد', text: 'الحجوزات التي تنتهي مواعيدها ستظهر هنا.' };
+      case 'CANCELLED':
+        return { icon: '🎉', title: 'لا توجد حجوزات ملغاة — رائع!', text: 'كل حجوزاتك سارية أو مكتملة دون أي إلغاء.' };
+      default:
+        return { icon: '📅', title: 'لا توجد حجوزات هنا', text: 'لم تقم بأي حجز بعد. تصفّح الملاعب وابدأ أول حجز لك.' };
+    }
+  });
+
+  dateChipDay(reservation: Reservation): string {
+    return String(new Date(`${reservation.reservationDate}T00:00:00`).getDate());
+  }
+
+  dateChipMonth(reservation: Reservation): string {
+    return MONTHS_AR[new Date(`${reservation.reservationDate}T00:00:00`).getMonth()];
+  }
+
+  dateChipWeekday(reservation: Reservation): string {
+    return WEEKDAYS_AR[new Date(`${reservation.reservationDate}T00:00:00`).getDay()];
+  }
+
+  // "اليوم" / "غدًا" / "بعد N أيام" — للحجوزات المؤكدة القادمة فقط
+  relativeDayLabel(reservation: Reservation): string {
+    if (reservation.status !== 'CONFIRMED' || !this.isUpcoming(reservation)) return '';
+    const slotDay = new Date(`${reservation.reservationDate}T00:00:00`);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const diffDays = Math.round((slotDay.getTime() - today.getTime()) / 86400000);
+    if (diffDays <= 0) return 'اليوم';
+    if (diffDays === 1) return 'غدًا';
+    if (diffDays === 2) return 'بعد يومين';
+    return `بعد ${diffDays} أيام`;
+  }
+
+  // يعكس نفس نافذة الساعتين في isCancellable() — لعرض تلميح بصري فقط، لا قرار جديد
+  cancelWindowStatus(reservation: Reservation): 'open' | 'closing' | null {
+    if (reservation.status !== 'CONFIRMED' || !this.isUpcoming(reservation)) return null;
+    return this.isCancellable(reservation) ? 'open' : 'closing';
   }
 }

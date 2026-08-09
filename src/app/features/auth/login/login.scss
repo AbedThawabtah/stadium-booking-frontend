@@ -50,6 +50,8 @@
 
 .full-width {
   @include auth.field-overrides;
+  display: block;
+  width: 100%;
 }
 
 .error-banner {

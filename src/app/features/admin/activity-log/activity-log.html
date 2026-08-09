@@ -1,5 +1,6 @@
 <div class="page-container">
   <h1>سجل النشاطات</h1>
+  <p class="page-subtitle">سجل بكل الإجراءات المهمة اللي صارت بالنظام</p>
   <app-admin-nav></app-admin-nav>
 
   @if (loading()) {
@@ -30,12 +31,35 @@
 
   @if (!loading() && logs().length > 0) {
     <div class="logs-list">
-      @for (log of logs(); track log.id) {
+      @for (log of logs(); track log.id; let i = $index) {
+
+        @if (i === 0 || (log.createdAt | date:'yyyy-MM-dd') !== (logs()[i-1].createdAt | date:'yyyy-MM-dd')) {
+          <div class="log-date-header">{{ log.createdAt | date:'d/M/yyyy' }}</div>
+        }
+
         <div class="log-row app-stagger-item">
-          <span class="app-badge app-badge--success">{{ log.eventType }}</span>
+          <span class="app-badge"
+                [class.app-badge--error]="log.eventType.includes('SUSPEND') || log.eventType.includes('REJECT') || log.eventType.includes('CANCEL') || log.eventType.includes('DEACTIVATE') || log.eventType.includes('DELETE')"
+                [class.app-badge--warning]="!(log.eventType.includes('SUSPEND') || log.eventType.includes('REJECT') || log.eventType.includes('CANCEL') || log.eventType.includes('DEACTIVATE') || log.eventType.includes('DELETE')) && log.eventType.includes('PENDING')"
+                [class.app-badge--success]="!log.eventType.includes('SUSPEND') && !log.eventType.includes('REJECT') && !log.eventType.includes('CANCEL') && !log.eventType.includes('DEACTIVATE') && !log.eventType.includes('DELETE') && !log.eventType.includes('PENDING')">
+            @switch (log.eventType) {
+              @case ('LOGIN') { تسجيل دخول }
+              @case ('REGISTER') { تسجيل حساب جديد }
+              @case ('STADIUM_CREATED') { إنشاء ملعب }
+              @case ('STADIUM_APPROVED') { الموافقة على ملعب }
+              @case ('STADIUM_SUSPENDED') { إيقاف ملعب }
+              @case ('STADIUM_REACTIVATED') { إعادة تفعيل ملعب }
+              @case ('RESERVATION_CREATED') { حجز جديد }
+              @case ('RESERVATION_CANCELLED') { إلغاء حجز }
+              @case ('REVIEW_APPROVED') { الموافقة على تقييم }
+              @case ('REVIEW_REJECTED') { رفض تقييم }
+              @case ('USER_STATUS_TOGGLED') { تغيير حالة مستخدم }
+              @default { {{ log.eventType }} }
+            }
+          </span>
           <div class="log-body">
             <p class="description">{{ log.description }}</p>
-            <p class="meta">{{ log.userName }} · {{ log.entityType }} #{{ log.entityId }} · {{ log.createdAt }}</p>
+            <p class="meta">{{ log.userName }} · {{ log.entityType }} #{{ log.entityId }} · {{ log.createdAt | date:'HH:mm' }}</p>
           </div>
         </div>
       }

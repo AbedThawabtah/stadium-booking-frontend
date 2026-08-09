@@ -2,6 +2,9 @@
 
 .auth-page {
   @include auth.page-shell;
+
+  // فقط عكس مكان القسمين
+  flex-direction: row-reverse;
 }
 
 .auth-form-panel {
@@ -67,6 +70,7 @@
 // ---------------------------------------------------------------------------
 // Step 1: account type selection cards.
 // ---------------------------------------------------------------------------
+
 .role-cards {
   display: flex;
   flex-direction: column;
@@ -88,16 +92,29 @@
   border-radius: auth.$radius-md;
   cursor: pointer;
   font-family: auth.$font;
-  transition: border-color var(--transition-base), background-color var(--transition-base), transform var(--transition-fast);
+
+  transition:
+    border-color var(--transition-base),
+    background-color var(--transition-base),
+    transform var(--transition-fast);
 
   &:hover,
   &--selected {
     border-color: auth.$green;
   }
 
-  &:hover { background: auth.$green-lighter; transform: translateY(-2px); }
-  &--selected { background: auth.$green-light; }
-  &:active { transform: translateY(0) scale(0.99); }
+  &:hover {
+    background: auth.$green-lighter;
+    transform: translateY(-2px);
+  }
+
+  &--selected {
+    background: auth.$green-light;
+  }
+
+  &:active {
+    transform: translateY(0) scale(0.99);
+  }
 
   &:focus-visible {
     outline: 3px solid rgba(22, 163, 74, 0.3);
@@ -120,7 +137,11 @@
     color: auth.$green-dark;
     margin-bottom: 4px;
 
-    mat-icon { font-size: 22px; width: 22px; height: 22px; }
+    mat-icon {
+      font-size: 22px;
+      width: 22px;
+      height: 22px;
+    }
   }
 
   &--selected &__icon {
@@ -149,13 +170,18 @@
     border-radius: 50%;
     background: auth.$green;
 
-    mat-icon { font-size: 15px; width: 15px; height: 15px; }
+    mat-icon {
+      font-size: 15px;
+      width: 15px;
+      height: 15px;
+    }
   }
 }
 
 // ---------------------------------------------------------------------------
 // Step 2: account details.
 // ---------------------------------------------------------------------------
+
 .step-two {
   display: flex;
   flex-direction: column;

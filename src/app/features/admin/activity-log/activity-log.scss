@@ -9,11 +9,27 @@
 h1 {
   font: var(--font-page-title);
   color: var(--color-navy);
+  margin: 0 0 6px;
+}
+
+.page-subtitle {
+  font-size: 14px;
+  color: var(--color-text-secondary);
   margin: 0 0 20px;
+  max-width: 640px;
 }
 
 .page-alert {
   margin-bottom: 20px;
+}
+
+.log-date-header {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--color-text-secondary);
+  margin: 20px 0 8px;
+
+  &:first-of-type { margin-top: 0; }
 }
 
 .logs-list {

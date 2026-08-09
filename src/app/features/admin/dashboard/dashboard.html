@@ -1,13 +1,21 @@
 <div class="page-container">
   <h1>لوحة تحكم الأدمن</h1>
+  <p class="page-subtitle">نظرة سريعة على أداء المنصة، وما يحتاج انتباهك الآن</p>
   <app-admin-nav></app-admin-nav>
 
   @if (loading()) {
-    <div class="stats-grid" aria-hidden="true">
+    <div class="attention-section" aria-hidden="true">
+      <div class="app-skeleton dash-skeleton__attention"></div>
+    </div>
+    <div class="stat-story-grid" aria-hidden="true">
       @for (i of [1,2,3,4]; track i) {
-        <div class="stat-card">
+        <div class="stat-story">
+          <div class="app-skeleton dash-skeleton__title"></div>
           <div class="app-skeleton dash-skeleton__value"></div>
-          <div class="app-skeleton dash-skeleton__label"></div>
+          <div class="dash-skeleton__row">
+            <div class="app-skeleton dash-skeleton__chip"></div>
+            <div class="app-skeleton dash-skeleton__chip"></div>
+          </div>
         </div>
       }
     </div>
@@ -19,34 +27,143 @@
 
   @if (!loading() && stats(); as s) {
 
-    <div class="section-title">المستخدمون</div>
-    <div class="stats-grid">
-      <div class="stat-card app-stagger-item"><span class="value">{{ s.totalUsers }}</span><span class="label">إجمالي المستخدمين</span></div>
-      <div class="stat-card app-stagger-item"><span class="value">{{ s.totalCustomers }}</span><span class="label">عملاء</span></div>
-      <div class="stat-card app-stagger-item"><span class="value">{{ s.totalStadiumOwners }}</span><span class="label">أصحاب ملاعب</span></div>
-    </div>
+    <section class="attention-section">
+      @if (s.pendingStadiums > 0 || s.pendingReviews > 0) {
+        <h2 class="attention-section__title">يحتاج انتباهك</h2>
+        <div class="attention-cards">
+          @if (s.pendingStadiums > 0) {
+            <a href="/admin/stadiums" class="attention-card app-stagger-item">
+              <span class="attention-card__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="20" height="20">
+                  <circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="1.6"></circle>
+                  <path d="M12 6.2l3.6 2.6-1.4 4.2h-4.4l-1.4-4.2z" fill="currentColor"></path>
+                </svg>
+              </span>
+              <span class="attention-card__body">
+                <span class="attention-card__value">{{ s.pendingStadiums }}</span>
+                <span class="attention-card__label">{{ s.pendingStadiums === 1 ? 'ملعب بانتظار الموافقة' : 'ملاعب بانتظار الموافقة' }}</span>
+              </span>
+              <span class="attention-card__cta" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="16" height="16">
+                  <polyline points="15 18 9 12 15 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></polyline>
+                </svg>
+              </span>
+            </a>
+          }
+          @if (s.pendingReviews > 0) {
+            <a href="/admin/reviews" class="attention-card app-stagger-item">
+              <span class="attention-card__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="20" height="20">
+                  <path d="M12 3.5l2.6 5.4 5.9.6-4.4 4 1.2 5.8L12 16.4l-5.3 2.9 1.2-5.8-4.4-4 5.9-.6z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"></path>
+                </svg>
+              </span>
+              <span class="attention-card__body">
+                <span class="attention-card__value">{{ s.pendingReviews }}</span>
+                <span class="attention-card__label">{{ s.pendingReviews === 1 ? 'تقييم بانتظار المراجعة' : 'تقييمات بانتظار المراجعة' }}</span>
+              </span>
+              <span class="attention-card__cta" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="16" height="16">
+                  <polyline points="15 18 9 12 15 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></polyline>
+                </svg>
+              </span>
+            </a>
+          }
+        </div>
+      } @else {
+        <div class="attention-calm app-stagger-item">
+          <span class="attention-calm__icon" aria-hidden="true">✅</span>
+          <div>
+            <h2>كل شيء تحت السيطرة</h2>
+            <p>لا توجد ملاعب أو تقييمات بانتظار المراجعة حاليًا</p>
+          </div>
+        </div>
+      }
+    </section>
 
-    <div class="section-title">الملاعب</div>
-    <div class="stats-grid">
-      <div class="stat-card app-stagger-item"><span class="value">{{ s.totalStadiums }}</span><span class="label">إجمالي الملاعب</span></div>
-      <div class="stat-card app-stagger-item highlight-green"><span class="value">{{ s.activeStadiums }}</span><span class="label">نشطة</span></div>
-      <div class="stat-card app-stagger-item highlight-orange"><span class="value">{{ s.pendingStadiums }}</span><span class="label">بانتظار الموافقة</span></div>
-      <div class="stat-card app-stagger-item highlight-red"><span class="value">{{ s.suspendedStadiums }}</span><span class="label">موقوفة</span></div>
-    </div>
+    <div class="stat-story-grid">
 
-    <div class="section-title">الحجوزات والإيرادات</div>
-    <div class="stats-grid">
-      <div class="stat-card app-stagger-item"><span class="value">{{ s.totalReservations }}</span><span class="label">إجمالي الحجوزات</span></div>
-      <div class="stat-card app-stagger-item highlight-green"><span class="value">{{ s.confirmedReservations }}</span><span class="label">مؤكدة</span></div>
-      <div class="stat-card app-stagger-item"><span class="value">{{ s.completedReservations }}</span><span class="label">مكتملة</span></div>
-      <div class="stat-card app-stagger-item highlight-red"><span class="value">{{ s.cancelledReservations }}</span><span class="label">ملغاة</span></div>
-      <div class="stat-card app-stagger-item wide highlight-green"><span class="value">{{ s.totalRevenue }} ₪</span><span class="label">إجمالي قيمة الحجوزات</span></div>
-    </div>
+      <section class="stat-story app-stagger-item">
+        <h2 class="stat-story__title">المستخدمون</h2>
+        <div class="stat-story__headline">
+          <span class="stat-story__value">{{ s.totalUsers }}</span>
+          <span class="stat-story__label">إجمالي المستخدمين</span>
+        </div>
+        <div class="stat-story__breakdown">
+          <div class="mini-stat">
+            <span class="mini-stat__value">{{ s.totalCustomers }}</span>
+            <span class="mini-stat__label">عملاء</span>
+          </div>
+          <div class="mini-stat">
+            <span class="mini-stat__value">{{ s.totalStadiumOwners }}</span>
+            <span class="mini-stat__label">أصحاب ملاعب</span>
+          </div>
+        </div>
+      </section>
 
-    <div class="section-title">التقييمات</div>
-    <div class="stats-grid">
-      <div class="stat-card app-stagger-item"><span class="value">{{ s.totalReviews }}</span><span class="label">إجمالي التقييمات</span></div>
-      <div class="stat-card app-stagger-item highlight-orange"><span class="value">{{ s.pendingReviews }}</span><span class="label">بانتظار المراجعة</span></div>
+      <section class="stat-story app-stagger-item">
+        <h2 class="stat-story__title">الملاعب</h2>
+        <div class="stat-story__headline">
+          <span class="stat-story__value">{{ s.totalStadiums }}</span>
+          <span class="stat-story__label">إجمالي الملاعب</span>
+        </div>
+        <div class="stat-story__breakdown">
+          <div class="mini-stat mini-stat--success">
+            <span class="mini-stat__value">{{ s.activeStadiums }}</span>
+            <span class="mini-stat__label">نشطة</span>
+          </div>
+          <div class="mini-stat mini-stat--warning">
+            <span class="mini-stat__value">{{ s.pendingStadiums }}</span>
+            <span class="mini-stat__label">بانتظار الموافقة</span>
+          </div>
+          <div class="mini-stat mini-stat--error">
+            <span class="mini-stat__value">{{ s.suspendedStadiums }}</span>
+            <span class="mini-stat__label">موقوفة</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="stat-story stat-story--wide app-stagger-item">
+        <h2 class="stat-story__title">الحجوزات والإيرادات</h2>
+        <div class="stat-story__headlines">
+          <div class="stat-story__headline">
+            <span class="stat-story__value">{{ s.totalReservations }}</span>
+            <span class="stat-story__label">إجمالي الحجوزات</span>
+          </div>
+          <div class="stat-story__headline">
+            <span class="stat-story__value stat-story__value--accent">{{ s.totalRevenue }} ₪</span>
+            <span class="stat-story__label">إجمالي قيمة الحجوزات</span>
+          </div>
+        </div>
+        <div class="stat-story__breakdown">
+          <div class="mini-stat mini-stat--success">
+            <span class="mini-stat__value">{{ s.confirmedReservations }}</span>
+            <span class="mini-stat__label">مؤكدة</span>
+          </div>
+          <div class="mini-stat">
+            <span class="mini-stat__value">{{ s.completedReservations }}</span>
+            <span class="mini-stat__label">مكتملة</span>
+          </div>
+          <div class="mini-stat mini-stat--error">
+            <span class="mini-stat__value">{{ s.cancelledReservations }}</span>
+            <span class="mini-stat__label">ملغاة</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="stat-story app-stagger-item">
+        <h2 class="stat-story__title">التقييمات</h2>
+        <div class="stat-story__headline">
+          <span class="stat-story__value">{{ s.totalReviews }}</span>
+          <span class="stat-story__label">إجمالي التقييمات</span>
+        </div>
+        <div class="stat-story__breakdown">
+          <div class="mini-stat mini-stat--warning">
+            <span class="mini-stat__value">{{ s.pendingReviews }}</span>
+            <span class="mini-stat__label">بانتظار المراجعة</span>
+          </div>
+        </div>
+      </section>
+
     </div>
 
   }

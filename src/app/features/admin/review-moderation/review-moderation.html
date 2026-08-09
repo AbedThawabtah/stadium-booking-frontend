@@ -1,5 +1,6 @@
 <div class="page-container">
   <h1>مراجعة التقييمات</h1>
+  <p class="page-subtitle">راجع التقييمات المرسلة من العملاء قبل نشرها للعموم</p>
   <app-admin-nav></app-admin-nav>
 
   @if (loading()) {
@@ -28,6 +29,11 @@
   }
 
   @if (!loading() && pendingReviews().length > 0) {
+    <div class="section-header">
+      تقييمات بانتظار المراجعة
+      <span class="section-header__count">{{ pendingReviews().length }}</span>
+    </div>
+
     <div class="reviews-list">
       @for (review of pendingReviews(); track review.id) {
         <div class="review-card app-stagger-item">
@@ -38,6 +44,8 @@
             </div>
             <span class="stars">{{ '★'.repeat(review.rating) }}{{ '☆'.repeat(5 - review.rating) }}</span>
           </div>
+
+          <span class="app-badge app-badge--warning">بانتظار المراجعة</span>
 
           <p class="comment">{{ review.comment }}</p>
 
