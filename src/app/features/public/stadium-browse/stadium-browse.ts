@@ -119,12 +119,20 @@ export class StadiumBrowseComponent implements OnInit {
     // فحص أول مرة
     this.triggerSearch();
 
+//=====================================================
+// NEEDS TO BE FIXED ===================================
+//=====================================================
+
     // أي تغيير بالفلاتر يرجع للصفحة الأولى ويعيد البحث
     this.filterForm.valueChanges.subscribe(() => {
       this.formSnapshot.set(this.filterForm.getRawValue());
       this.currentPage.set(0);
       this.triggerSearch();
     });
+
+//======================================================
+//======================================================
+//=====================================================    
   }
 
   triggerSearch(): void {

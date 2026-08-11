@@ -27,10 +27,16 @@ export class TokenStorageService {
     return localStorage.getItem(REFRESH_KEY);
   }
 
+//=====================================================
+// BETTER TO FIX ======================================
+//=====================================================
   getUser(): { userId: number; fullName: string; email: string; role: string } | null {
     const raw = localStorage.getItem(USER_KEY);
     return raw ? JSON.parse(raw) : null;
   }
+//======================================================
+//======================================================
+//=====================================================
 
   clear(): void {
     localStorage.removeItem(TOKEN_KEY);

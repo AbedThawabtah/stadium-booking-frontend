@@ -238,6 +238,10 @@ export class StadiumManageComponent implements OnInit, OnDestroy {
     });
   }
 
+//=====================================================
+//FRONTEND IMAGE TYPE VALIDATION REQUIRED  ============
+//=====================================================
+
   // ── الصور ──
   private loadImages(id: number): void {
     this.imagesLoading.set(true);
@@ -246,6 +250,10 @@ export class StadiumManageComponent implements OnInit, OnDestroy {
       error: () => { this.imagesLoading.set(false); }
     });
   }
+
+//=====================================================
+//=====================================================
+//=====================================================  
 
   onFilesSelected(event: Event): void {
     const input = event.target as HTMLInputElement;

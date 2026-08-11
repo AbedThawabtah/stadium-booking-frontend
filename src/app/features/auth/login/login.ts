@@ -59,11 +59,17 @@ export class LoginComponent {
   this.errorMessage.set(null);
 
   this.authService.login(this.form.getRawValue() as { email: string; password: string }).subscribe({
+//=====================================================
+// NEEDS TO BE FIXED ===================================
+//=====================================================
     next: () => {
       this.loading.set(false);
       const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || '/stadiums';
       this.router.navigateByUrl(returnUrl);
     },
+//======================================================
+//======================================================
+//=====================================================    
     error: (err: HttpErrorResponse) => {
       this.loading.set(false);
       const body = err.error as ErrorResponse;
