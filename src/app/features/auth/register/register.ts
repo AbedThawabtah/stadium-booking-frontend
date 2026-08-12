@@ -105,7 +105,9 @@ export class RegisterComponent {
     this.errorMessage.set(null);
 
     const { confirmPassword, ...payload } = this.form.getRawValue();
-
+//=====================================================
+// NEEDS TO BE FIXED ===================================
+//=====================================================
     this.authService.register(payload as any).subscribe({
       next: () => {
         this.loading.set(false);
@@ -123,5 +125,9 @@ export class RegisterComponent {
         }
       }
     });
+
+//======================================================
+//======================================================
+//=====================================================
   }
 }

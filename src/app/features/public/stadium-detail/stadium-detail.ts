@@ -94,13 +94,18 @@ export class StadiumDetailComponent implements OnInit {
 
   private loadStadiumData(id: number): void {
     this.loading.set(true);
-
+//=====================================================
+// NEEDS TO BE FIXED ===================================
+//=====================================================
     forkJoin({
       stadium: this.stadiumService.getById(id),
       images: this.imageService.getImages(id),
       workingHours: this.workingHourService.getWorkingHours(id),
       reviews: this.reviewService.getStadiumReviews(id)
     }).subscribe({
+  //======================================================
+  //======================================================
+  //=====================================================
       next: (result) => {
         this.stadium.set(result.stadium);
         this.images.set(result.images);

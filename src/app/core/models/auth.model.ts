@@ -10,7 +10,7 @@ export interface RegisterRequest {
   email: string;
   phoneNumber: string;
   password: string;
-  role?: 'CUSTOMER' | 'STADIUM_OWNER'; // ADMIN ممنوع من التسجيل العام
+  role?: 'CUSTOMER' | 'STADIUM_OWNER'; 
 }
 
 export interface AuthResponse {

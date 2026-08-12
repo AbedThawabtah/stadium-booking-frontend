@@ -31,13 +31,18 @@ export class AuthService {
       tap(response => this.handleAuthSuccess(response))
     );
   }
-
+//=====================================================
+// NEEDS TO BE FIXED ===================================
+//=====================================================
   refreshToken(): Observable<AuthResponse> {
     const refreshToken = this.tokenStorage.getRefreshToken();
     return this.http.post<AuthResponse>(`${this.apiUrl}/refresh`, { refreshToken }).pipe(
       tap(response => this.handleAuthSuccess(response))
     );
   }
+  //======================================================
+  //======================================================
+  //=====================================================
 
   logout(): void {
     this.tokenStorage.clear();
